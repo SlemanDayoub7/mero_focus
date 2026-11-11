@@ -1,0 +1,4 @@
+# TODO: add the lint rules for this project.
+analyzer:
+  exclude:
+    - "**/*.g.dart"
