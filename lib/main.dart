@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'app.dart';
+import 'core/constants/app_constants.dart';
 
-import 'package:mero_focus/app.dart';
-
-void main() {
-  // TODO: WidgetsFlutterBinding.ensureInitialized().
-  // TODO: initialize Hive and open the boxes declared in HiveBoxNames.
-  // TODO: initialize easy_localization.
-  // TODO: initialize flutter_local_notifications.
-  // TODO: call initDependencies() from core/di/injection_container.dart.
-  runApp(const MeroFocusApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
+  await Hive.initFlutter();
+  runApp(
+    EasyLocalization(
+      supportedLocales: AppConstants.supportedLocales,
+      path: AppConstants.translationsPath,
+      fallbackLocale: AppConstants.defaultLocale,
+      child: const MeroFocusApp(),
+    ),
+  );
 }

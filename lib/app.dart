@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'core/theme/app_colors.dart';
+import 'core/constants/app_constants.dart';
+import 'features/home/presentation/pages/placeholder_home_page.dart';
 
-/// Root widget of the app.
-///
-/// Responsible for wiring the theme, localization and the router together.
 class MeroFocusApp extends StatelessWidget {
   const MeroFocusApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // TODO: return MaterialApp with:
-    //   - theme: AppTheme.light
-    //   - darkTheme: AppTheme.dark
-    //   - routes: AppRouter.routes
-    //   - easy_localization delegates and supported locales.
-    throw UnimplementedError();
+    return MaterialApp(
+      title: AppConstants.appName,
+      debugShowCheckedModeBanner: false,
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
+      theme: ThemeData(colorScheme: AppColors.light, useMaterial3: true),
+      darkTheme: ThemeData(colorScheme: AppColors.dark, useMaterial3: true),
+      themeMode: ThemeMode.system,
+      home: const PlaceholderHomePage(),
+    );
   }
 }
