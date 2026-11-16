@@ -18,7 +18,7 @@ class PlaceholderHomePage extends StatelessWidget {
           padding: EdgeInsets.all(isTablet ? AppSpacing.xl : AppSpacing.lg),
           child: Text(
             context.translate(LocaleKeys.app_name),
-            style: AppTypography.heading.copyWith(color: context.colors.primary),
+            style: AppTypography.heading.copyWith(color: context.colors.onPrimaryContainer),
           ),
         ),
       ),

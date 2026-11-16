@@ -3,5 +3,11 @@
     "home": "الرئيسية",
     "review": "المراجعة",
     "pomodoro": "بومودورو",
-    "add_entry": "إضافة عنصر"
+    "add_entry": "إضافة عنصر",
+    "settings": "الإعدادات",
+    "theme_section": "المظهر",
+    "theme_light": "فاتح",
+    "theme_dark": "غامق",
+    "theme_system": "حسب النظام",
+    "language_section": "اللغة"
 }
