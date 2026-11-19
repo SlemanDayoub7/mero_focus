@@ -8,39 +8,47 @@
 | Flavor | Application ID | الاستخدام |
 |---|---|---|
 | `dev` | `com.sleman.miro_focus.dev` | أثناء التطوير اليومي، logging مفصّل مفعّل، أي مزوّد تحليلات (ADR-0008) بوضع تجريبي/معطّل |
-| `release` | `com.sleman.miro_focus` | النسخة المنشورة فعليًا على Google Play |
+| `prod` | `com.sleman.miro_focus` | النسخة المنشورة فعليًا على Google Play |
 
-*(المعرّف الفعلي المعتمد للمشروع: `com.sleman.miro_focus`، مع لاحقة `.dev` لبيئة التطوير)*
+*(المعرّف الفعلي المعتمد للمشروع: `com.sleman.miro_focus`، مع لاحقة `.dev` لبيئة التطوير. flavor النشر اسمه `prod` لأن AGP يمنع تسمية product flavor بنفس اسم build type القياسي `release`.)*
 
 ## الإعداد التقني (Android)
 
-يُعرَّف الـ flavors ضمن `android/app/build.gradle`:
+يُعرَّف الـ flavors ضمن `android/app/build.gradle.kts`:
 
-```gradle
+```kotlin
 android {
-    flavorDimensions "environment"
+    namespace = "com.sleman.miro_focus"
+    defaultConfig {
+        applicationId = "com.sleman.miro_focus"
+    }
+    flavorDimensions += "environment"
     productFlavors {
-        dev {
-            dimension "environment"
-            applicationIdSuffix ".dev"
-            resValue "string", "app_name", "App (Dev)"
+        create("dev") {
+            dimension = "environment"
+            applicationIdSuffix = ".dev"
+            resValue("string", "app_name", "Mero Focus (Dev)")
         }
-        release {
-            dimension "environment"
-            resValue "string", "app_name", "App"
+        create("prod") {
+            dimension = "environment"
+            resValue("string", "app_name", "Mero Focus")
         }
     }
 }
 ```
 
+الـ manifest يستخدم `android:label="@string/app_name"` حتى يأتي العنوان من الـ flavor.
+و`MainActivity` في الحزمة `com.sleman.miro_focus` بما يطابق `namespace`.
+
 ## التشغيل والبناء
 
 ```bash
 flutter run --flavor dev -t lib/main_dev.dart
-flutter build appbundle --flavor release -t lib/main_release.dart
+flutter build appbundle --flavor prod -t lib/main_release.dart
 ```
 
-`lib/main_dev.dart` و`lib/main_release.dart` ملفان صغيران فقط يحددان أي إعدادات بيئة (مثل تفعيل/تعطيل `CrashReporter` الحقيقي من ADR-0008) قبل استدعاء `runApp` من `lib/app.dart` المشترك بين الاثنين — **لا تكرار منطق، فقط نقطة دخول مختلفة.**
+`lib/main_dev.dart` و`lib/main_release.dart` ملفان صغيران يختاران `AppEnvironment` فقط ويمرّران `MeroFocusApp` المشترك إلى `bootstrap()` في `lib/bootstrap.dart` — **لا تكرار منطق، فقط نقطة دخول مختلفة.** الـ `bootstrap()` يتولى التهيئة وربط معالجات الأخطاء و overrides الخاصة بـ Riverpod.
+و`lib/main.dart` تُبقى كنقطة دخول تطويرية للتوافق مع الأدوات التي لا تمرّر `-t`؛ دائمًا مرّر `-t lib/main_release.dart` للبناء المنشور.
 
 ## ملاحظة أمان
 أي مفتاح/سر خاص بمزوّد خارجي (لو أُضيف Firebase لاحقًا) يُمرَّر عبر `--dart-define` أو ملفات إعداد غير مرفوعة على Git (`google-services.json` لكل flavor في مساره الخاص)، وليس داخل الكود مباشرة.

@@ -52,5 +52,7 @@ The project targets Flutter 3.41 / Dart 3.11, whose SDK pins `meta 1.17.0`. That
 - **Riverpod providers are written manually** instead of with `riverpod_generator` + `riverpod_annotation`. ADR-0003's decision (Riverpod, DI via providers, easy overrides in tests) is fully honoured; only the boilerplate-reduction tool is omitted.
 - **`riverpod_lint` / `custom_lint` are not installed** because they require a newer analyzer/`meta` than the SDK permits. `flutter_lints` is enabled with strict additional rules in `analysis_options.yaml`.
 - **Codegen versions are pinned** (`build_runner 2.15.1`, `drift_dev 2.34.0`, `drift 2.34.0`) because newer releases require analyzer 13+, which needs `meta ^1.18` and conflicts with the Flutter SDK pin.
+- **`permission_handler` is pinned to 12.0.3** because 13.x depends on `permission_handler_android` 14.x, whose Gradle script requires AGP 9; this project uses the Flutter 3.41 Android baseline (AGP 8.7 / Gradle 8.10.2).
+- **The published Android flavor is named `prod`, not `release`**, because AGP rejects a product flavor that shares a name with the standard `release` build type. Its application id is still `com.sleman.miro_focus`; see [`build-flavors.md`](docs/en/03-process/build-flavors.md).
 
-These deviations are SDK-driven and will be revisited when the Flutter SDK moves to Dart 3.12+.
+These deviations are SDK/toolchain-driven and will be revisited when the Flutter SDK moves to Dart 3.12+.

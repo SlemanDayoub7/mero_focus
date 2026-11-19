@@ -2,9 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../config/app_environment.dart';
 import '../database/app_database.dart';
 import '../observability/analytics_tracker.dart';
 import '../observability/crash_reporter.dart';
+
+/// Selected by the entry point via `bootstrap()` and overridable in tests.
+final appEnvironmentProvider = Provider<AppEnvironment>((ref) {
+  throw UnimplementedError('appEnvironmentProvider must be overridden');
+});
 
 /// Observability ports (ADR-0008). No real provider is wired yet.
 final crashReporterProvider = Provider<CrashReporter>((ref) {

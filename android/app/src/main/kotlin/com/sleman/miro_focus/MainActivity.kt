@@ -1,4 +1,4 @@
-package com.sleman.mero_focus
+package com.sleman.miro_focus
 
 import io.flutter.embedding.android.FlutterActivity
 
