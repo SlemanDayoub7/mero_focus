@@ -10,7 +10,8 @@ extension ContextExtensions on BuildContext {
 }
 
 extension LocalizationExtensions on BuildContext {
-  String translate(String key, {List<String>? args}) => key.tr(args: args);
+  String translate(String key, {List<String>? args}) =>
+      key.tr(context: this, args: args);
   Future<void> changeLocale(Locale locale) => setLocale(locale);
   Locale get currentLocale => locale;
 }

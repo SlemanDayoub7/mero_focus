@@ -3,5 +3,11 @@
     "home": "Home",
     "review": "Review",
     "pomodoro": "Pomodoro",
-    "add_entry": "Add Entry"
+    "add_entry": "Add Entry",
+    "settings": "Settings",
+    "theme_section": "Appearance",
+    "theme_light": "Light",
+    "theme_dark": "Dark",
+    "theme_system": "System",
+    "language_section": "Language"
 }

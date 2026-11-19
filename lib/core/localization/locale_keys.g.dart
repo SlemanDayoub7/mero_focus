@@ -8,5 +8,11 @@ abstract class  LocaleKeys {
   static const review = 'review';
   static const pomodoro = 'pomodoro';
   static const add_entry = 'add_entry';
+  static const settings = 'settings';
+  static const theme_section = 'theme_section';
+  static const theme_light = 'theme_light';
+  static const theme_dark = 'theme_dark';
+  static const theme_system = 'theme_system';
+  static const language_section = 'language_section';
 
 }
