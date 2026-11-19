@@ -1,17 +1,15 @@
-# mero_focus
+# Mero Focus — توثيق المشروع / Project Documentation
 
-Focus, capture and spaced-repetition review app.
+🇸🇦 **العربية:** [`README.ar.md`](README.ar.md) — كل التوثيق التقني تحت [`docs/ar/`](docs/ar/)
 
-## Getting Started
+🇬🇧 **English:** [`README.en.md`](README.en.md) — all technical docs under [`docs/en/`](docs/en/)
 
-This project is a starting point for a Flutter application.
+Both versions mirror the exact same structure and are kept in sync.
+النسختان بنفس البنية تمامًا ويُحافَظ على تزامنهما.
 
-A few resources to get you started if this is your first Flutter project:
+## تنفيذ / Implementation
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Architecture decisions: [`docs/ar/02-architecture/adr/`](docs/ar/02-architecture/adr/) · [`docs/en/02-architecture/adr/`](docs/en/02-architecture/adr/)
+- Build order: [`docs/ar/04-roadmap/build-order.md`](docs/ar/04-roadmap/build-order.md) · [`docs/en/04-roadmap/build-order.md`](docs/en/04-roadmap/build-order.md)
+- Testing strategy: [`docs/ar/03-process/testing-strategy.md`](docs/ar/03-process/testing-strategy.md) · [`docs/en/03-process/testing-strategy.md`](docs/en/03-process/testing-strategy.md)
+- Git workflow: [`docs/ar/03-process/git-workflow.md`](docs/ar/03-process/git-workflow.md) · [`docs/en/03-process/git-workflow.md`](docs/en/03-process/git-workflow.md)
