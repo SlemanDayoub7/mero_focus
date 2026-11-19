@@ -2,11 +2,11 @@ import 'package:equatable/equatable.dart';
 
 /// Base contract for every use case.
 ///
-/// [Type] is the returned value and [Params] the input of the use case.
-abstract class UseCase<Type, Params> {
+/// [T] is the returned value and [Params] the input of the use case.
+abstract class UseCase<T, Params> {
   const UseCase();
 
-  Future<Type> call(Params params);
+  Future<T> call(Params params);
 }
 
 /// Params placeholder for use cases that take no input.

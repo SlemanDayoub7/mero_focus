@@ -1,8 +1,32 @@
 import 'package:flutter/material.dart';
 
-/// Route names and the route table of the app.
+import '../../features/capture/presentation/pages/placeholder_capture_page.dart';
+import '../../features/review/presentation/pages/placeholder_review_page.dart';
+import '../../features/settings/presentation/pages/settings_page.dart';
+
+/// Lightweight manual router on top of Navigator 1.0 (ADR-0007).
+///
+/// Every navigation goes through a named `toXxx` method — no free-text route
+/// names or `Navigator.push` calls scattered across widgets.
 abstract final class AppRouter {
-  // TODO: declare the route names.
-  // TODO: declare the route table used by MaterialApp.
-  static Map<String, WidgetBuilder> get routes => throw UnimplementedError();
+  static const String home = '/';
+  static const String review = '/review';
+  static const String capture = '/capture';
+  static const String settings = '/settings';
+
+  /// Routes below the root; `/` is owned by `MaterialApp.home`.
+  static Map<String, WidgetBuilder> get routes => <String, WidgetBuilder>{
+        review: (_) => const PlaceholderReviewPage(),
+        capture: (_) => const PlaceholderCapturePage(),
+        settings: (_) => const SettingsPage(),
+      };
+
+  static Future<T?> toReview<T extends Object?>(BuildContext context) =>
+      Navigator.of(context).pushNamed<T>(review);
+
+  static Future<T?> toCapture<T extends Object?>(BuildContext context) =>
+      Navigator.of(context).pushNamed<T>(capture);
+
+  static Future<T?> toSettings<T extends Object?>(BuildContext context) =>
+      Navigator.of(context).pushNamed<T>(settings);
 }

@@ -1,30 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'core/theme/app_theme.dart';
-import 'core/constants/app_constants.dart';
-import 'core/settings/cubit/theme_cubit.dart';
-import 'features/home/presentation/pages/home_shell_page.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MeroFocusApp extends StatelessWidget {
+import 'core/di/core_providers.dart';
+import 'core/l10n/l10n_context.dart';
+import 'core/routing/app_router.dart';
+import 'core/theme/app_theme.dart';
+import 'features/home/presentation/pages/home_shell_page.dart';
+import 'l10n/app_localizations.dart';
+
+class MeroFocusApp extends ConsumerWidget {
   const MeroFocusApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<ThemeCubit, ThemeMode>(
-      builder: (context, themeMode) {
-        return MaterialApp(
-          title: AppConstants.appName,
-          debugShowCheckedModeBanner: false,
-          localizationsDelegates: context.localizationDelegates,
-          supportedLocales: context.supportedLocales,
-          locale: context.locale,
-          theme: AppTheme.light,
-          darkTheme: AppTheme.dark,
-          themeMode: themeMode,
-          home: const HomeShellPage(),
-        );
-      },
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeModeProvider);
+    final locale = ref.watch(localeProvider);
+
+    return MaterialApp(
+      onGenerateTitle: (context) => context.l10n.appName,
+      debugShowCheckedModeBanner: false,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: locale,
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: themeMode,
+      routes: AppRouter.routes,
+      home: const HomeShellPage(),
     );
   }
 }
