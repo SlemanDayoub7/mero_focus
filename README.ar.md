@@ -58,5 +58,7 @@
 - **providers الخاصة بـ Riverpod مكتوبة يدويًا** بدل `riverpod_generator` + `riverpod_annotation`. قرار ADR-0003 (Riverpod، DI عبر providers، سهولة الـ override بالاختبارات) مطبَّق بالكامل؛ أُسقطت فقط أداة تقليل الـ boilerplate.
 - **لم نثبّت `riverpod_lint` / `custom_lint`** لأنهما يحتاجان analyzer و`meta` أحدث مما يسمح به الـ SDK. بدل ذلك فعّلنا `flutter_lints` مع قواعد إضافية صارمة في `analysis_options.yaml`.
 - **إصدارات الـ codegen مثبّتة** (`build_runner 2.15.1`، `drift_dev 2.34.0`، `drift 2.34.0`) لأن الإصدارات الأحدث تتطلب analyzer 13+ الذي يحتاج `meta ^1.18` ويتعارض مع تثبيت الـ SDK.
+- **`permission_handler` مثبَّت على 12.0.3** لأن 13.x يعتمد على `permission_handler_android` 14.x الذي يحتاج سكربت Gradle خاصه بـ AGP 9؛ بينما المشروع يستخدم أساس أندرويد Flutter 3.41 (AGP 8.7 / Gradle 8.10.2).
+- **flavor النشر اسمه `prod` وليس `release`** لأن AGP يرفض product flavor بنفس اسم build type القياسي `release`. معرّف التطبيق ما زال `com.sleman.miro_focus`؛ راجع [`build-flavors.md`](docs/ar/03-process/build-flavors.md).
 
-هذه الانحرافات مفروضة من الـ SDK وستُعاد مراجعتها عند الانتقال إلى Dart 3.12+.
+هذه الانحرافات مفروضة من الـ SDK/أدوات البناء وستُعاد مراجعتها عند الانتقال إلى Dart 3.12+.
