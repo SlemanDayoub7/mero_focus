@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mero_focus/core/extensions/context_extensions.dart';
 import '../../../review/presentation/pages/placeholder_review_page.dart';
 import '../../../capture/presentation/pages/placeholder_capture_page.dart';
-import '../../../pomodoro/presentation/pages/placeholder_pomodoro_page.dart';
 import '../../../settings/presentation/pages/settings_page.dart';
 import '../../../../core/localization/locale_keys.g.dart';
 
@@ -17,7 +16,6 @@ class _HomeShellPageState extends State<HomeShellPage> {
   final _pages = const [
     PlaceholderReviewPage(),
     PlaceholderCapturePage(),
-    PlaceholderPomodoroPage(),
     SettingsPage(),
   ];
 
@@ -36,10 +34,6 @@ class _HomeShellPageState extends State<HomeShellPage> {
           NavigationDestination(
             icon: const Icon(Icons.add_circle_outline),
             label: context.translate(LocaleKeys.add_entry),
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.timer_outlined),
-            label: context.translate(LocaleKeys.pomodoro),
           ),
           NavigationDestination(
             icon: const Icon(Icons.settings_outlined),
