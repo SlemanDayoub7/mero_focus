@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../features/capture/presentation/pages/placeholder_capture_page.dart';
+import '../../features/pomodoro/presentation/pages/pomodoro_timer_page.dart';
 import '../../features/review/presentation/pages/placeholder_review_page.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
 
@@ -10,16 +11,21 @@ import '../../features/settings/presentation/pages/settings_page.dart';
 /// names or `Navigator.push` calls scattered across widgets.
 abstract final class AppRouter {
   static const String home = '/';
+  static const String pomodoro = '/pomodoro';
   static const String review = '/review';
   static const String capture = '/capture';
   static const String settings = '/settings';
 
   /// Routes below the root; `/` is owned by `MaterialApp.home`.
   static Map<String, WidgetBuilder> get routes => <String, WidgetBuilder>{
+        pomodoro: (_) => const PomodoroTimerPage(),
         review: (_) => const PlaceholderReviewPage(),
         capture: (_) => const PlaceholderCapturePage(),
         settings: (_) => const SettingsPage(),
       };
+
+  static Future<T?> toPomodoro<T extends Object?>(BuildContext context) =>
+      Navigator.of(context).pushNamed<T>(pomodoro);
 
   static Future<T?> toReview<T extends Object?>(BuildContext context) =>
       Navigator.of(context).pushNamed<T>(review);

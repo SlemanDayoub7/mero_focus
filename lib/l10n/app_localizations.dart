@@ -175,6 +175,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'English'**
   String get english;
+
+  /// No description provided for @pomodoroWork.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus'**
+  String get pomodoroWork;
+
+  /// No description provided for @pomodoroShortBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Short break'**
+  String get pomodoroShortBreak;
+
+  /// No description provided for @pomodoroLongBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Long break'**
+  String get pomodoroLongBreak;
+
+  /// No description provided for @timerStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get timerStart;
+
+  /// No description provided for @timerPause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get timerPause;
+
+  /// No description provided for @timerReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get timerReset;
+
+  /// No description provided for @timerRound.
+  ///
+  /// In en, this message translates to:
+  /// **'Round {round}'**
+  String timerRound(int round);
 }
 
 class _AppLocalizationsDelegate
