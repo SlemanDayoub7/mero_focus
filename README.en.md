@@ -1,6 +1,6 @@
 # Mero Focus — A Pomodoro + Habit Tracking App (Android)
 
-> **Status:** Design and documentation phase — no implementation code yet.
+> **Status:** Implementation in progress — architecture core complete, features being rebuilt feature-by-feature.
 > **Target Platform:** Android only (MVP)
 > **Language/Framework:** Flutter + Dart
 > **Architecture:** Clean Architecture + Feature-First
@@ -44,3 +44,13 @@ See [`docs/en/04-roadmap/build-order.md`](docs/en/04-roadmap/build-order.md) for
 ## Why This Project? (The Market Opportunity)
 
 See [`docs/en/01-problem-and-research/competitor-research.md`](docs/en/01-problem-and-research/competitor-research.md).
+
+## Implementation Deviations (SDK-forced)
+
+The project targets Flutter 3.41 / Dart 3.11, whose SDK pins `meta 1.17.0`. That pin narrows the analyzer range to `<= 10.0.1`, which makes the documented generator/lint stack unsatisfiable at once:
+
+- **Riverpod providers are written manually** instead of with `riverpod_generator` + `riverpod_annotation`. ADR-0003's decision (Riverpod, DI via providers, easy overrides in tests) is fully honoured; only the boilerplate-reduction tool is omitted.
+- **`riverpod_lint` / `custom_lint` are not installed** because they require a newer analyzer/`meta` than the SDK permits. `flutter_lints` is enabled with strict additional rules in `analysis_options.yaml`.
+- **Codegen versions are pinned** (`build_runner 2.15.1`, `drift_dev 2.34.0`, `drift 2.34.0`) because newer releases require analyzer 13+, which needs `meta ^1.18` and conflicts with the Flutter SDK pin.
+
+These deviations are SDK-driven and will be revisited when the Flutter SDK moves to Dart 3.12+.

@@ -1,26 +1,43 @@
-import 'package:flutter/material.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'app.dart';
-import 'core/constants/app_constants.dart';
-import 'core/settings/cubit/theme_cubit.dart';
+import 'dart:ui';
 
-void main() async {
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'app.dart';
+import 'core/database/app_database.dart';
+import 'core/di/core_providers.dart';
+import 'core/observability/crash_reporter.dart';
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await EasyLocalization.ensureInitialized();
-  await Hive.initFlutter();
-  final settingsBox = await Hive.openBox('settings');
+
+  final preferences = await SharedPreferences.getInstance();
+  final database = await openAppDatabase();
+  const crashReporter = NoOpCrashReporter();
+
+  // Wire error handlers once, so activating a real provider later (ADR-0008)
+  // does not require touching this file again.
+  FlutterError.onError = (details) {
+    FlutterError.presentError(details);
+    crashReporter.recordError(
+      details.exception,
+      details.stack ?? StackTrace.empty,
+      context: 'flutter',
+    );
+  };
+  PlatformDispatcher.instance.onError = (error, stack) {
+    crashReporter.recordError(error, stack, context: 'platform');
+    return true;
+  };
 
   runApp(
-    EasyLocalization(
-      supportedLocales: AppConstants.supportedLocales,
-      path: AppConstants.translationsPath,
-      fallbackLocale: AppConstants.defaultLocale,
-      child: BlocProvider(
-        create: (_) => ThemeCubit(settingsBox),
-        child: const MeroFocusApp(),
-      ),
+    ProviderScope(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(preferences),
+        appDatabaseProvider.overrideWithValue(database),
+      ],
+      child: const MeroFocusApp(),
     ),
   );
 }

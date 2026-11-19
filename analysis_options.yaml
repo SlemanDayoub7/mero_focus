@@ -1,7 +1,31 @@
-# TODO: add the lint rules for this project.
+include: package:flutter_lints/flutter.yaml
+
 analyzer:
   exclude:
     - "**/*.g.dart"
+    - "**/*.freezed.dart"
   errors:
+    # Legacy feature scaffolding intentionally keeps injected-but-unused fields
+    # until each feature is rebuilt (see the build order roadmap).
     unused_field: ignore
     unused_local_variable: ignore
+
+linter:
+  rules:
+    always_declare_return_types: true
+    avoid_empty_else: true
+    avoid_print: true
+    avoid_relative_lib_imports: true
+    avoid_shadowing_type_parameters: true
+    avoid_types_as_parameter_names: true
+    camel_case_extensions: true
+    camel_case_types: true
+    constant_identifier_names: true
+    directives_ordering: true
+    prefer_const_constructors: true
+    prefer_const_declarations: true
+    prefer_final_fields: true
+    prefer_final_in_for_each: true
+    sort_child_properties_last: true
+    unnecessary_this: true
+    use_super_parameters: true

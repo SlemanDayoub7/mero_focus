@@ -83,7 +83,7 @@ void main() {
   });
 
   group('light scheme', () {
-    final scheme = AppColors.light;
+    const scheme = AppColors.light;
 
     test('maps the palette onto the Material 3 roles', () {
       expect(scheme.brightness, Brightness.light);
@@ -152,7 +152,7 @@ void main() {
   });
 
   group('dark scheme', () {
-    final scheme = AppColors.dark;
+    const scheme = AppColors.dark;
 
     test('maps the palette onto the Material 3 roles', () {
       expect(scheme.brightness, Brightness.dark);

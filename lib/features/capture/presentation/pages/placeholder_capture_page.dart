@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/l10n/l10n_context.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../core/localization/locale_keys.g.dart';
 
 class PlaceholderCapturePage extends StatelessWidget {
   const PlaceholderCapturePage({super.key});
@@ -12,7 +12,7 @@ class PlaceholderCapturePage extends StatelessWidget {
       backgroundColor: context.colors.surface,
       body: Center(
         child: Text(
-          context.translate(LocaleKeys.add_entry),
+          context.l10n.addEntry,
           style: AppTypography.heading.copyWith(color: context.colors.onPrimaryContainer),
         ),
       ),

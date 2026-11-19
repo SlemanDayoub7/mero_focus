@@ -1,6 +1,6 @@
 # Mero Focus — تطبيق بومودورو + تتبع عادات (أندرويد)
 
-> **الحالة:** مرحلة التصميم والتوثيق — ما بعد إنشاء كود بعد.
+> **الحالة:** التنفيذ جاري — أساس الآركتكتشر مكتمل، والميزات تُبنى feature-by-feature.
 > **المنصة المستهدفة:** أندرويد فقط (MVP)
 > **اللغة/الإطار:** Flutter + Dart
 > **الآركتكتشر:** Clean Architecture + Feature-First
@@ -50,3 +50,13 @@
 ## لماذا هذا المشروع؟ (الفرصة بالسوق)
 
 راجع [`docs/ar/01-problem-and-research/competitor-research.md`](docs/ar/01-problem-and-research/competitor-research.md).
+
+## انحرافات التنفيذ (فرضها الـ SDK)
+
+المشروع يستهدف Flutter 3.41 / Dart 3.11، اللي الـ SDK فيه يثبّت `meta 1.17.0`. هذا التثبيت يضيّق نطاق الـ analyzer إلى `<= 10.0.1`، مما يجعل مجموعة الـ generators/الـ lints الموثقة غير قابلة للتحقيق مع بعضها بنفس الوقت:
+
+- **providers الخاصة بـ Riverpod مكتوبة يدويًا** بدل `riverpod_generator` + `riverpod_annotation`. قرار ADR-0003 (Riverpod، DI عبر providers، سهولة الـ override بالاختبارات) مطبَّق بالكامل؛ أُسقطت فقط أداة تقليل الـ boilerplate.
+- **لم نثبّت `riverpod_lint` / `custom_lint`** لأنهما يحتاجان analyzer و`meta` أحدث مما يسمح به الـ SDK. بدل ذلك فعّلنا `flutter_lints` مع قواعد إضافية صارمة في `analysis_options.yaml`.
+- **إصدارات الـ codegen مثبّتة** (`build_runner 2.15.1`، `drift_dev 2.34.0`، `drift 2.34.0`) لأن الإصدارات الأحدث تتطلب analyzer 13+ الذي يحتاج `meta ^1.18` ويتعارض مع تثبيت الـ SDK.
+
+هذه الانحرافات مفروضة من الـ SDK وستُعاد مراجعتها عند الانتقال إلى Dart 3.12+.

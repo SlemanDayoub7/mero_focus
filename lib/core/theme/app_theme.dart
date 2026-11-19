@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'app_colors.dart';
 import 'app_spacing.dart';
+import 'app_theme_extension.dart';
 
 /// Builds the app [ThemeData] for light and dark mode.
 ///
@@ -75,6 +76,13 @@ abstract final class AppTheme {
         contentTextStyle: TextStyle(color: scheme.onInverseSurface),
         behavior: SnackBarBehavior.floating,
       ),
+      extensions: <ThemeExtension<dynamic>>[
+        AppThemeExtension(
+          focusPrimary: scheme.primary,
+          focusBackground: scheme.surface,
+          spacingUnit: AppSpacing.sm,
+        ),
+      ],
     );
   }
 }
