@@ -69,4 +69,46 @@ class AppLocalizationsAr extends AppLocalizations {
   String timerRound(int round) {
     return 'الجولة $round';
   }
+
+  @override
+  String get backgroundNotificationTitle => 'جلسة التركيز قيد التشغيل';
+
+  @override
+  String get backgroundNotificationText => 'اضغط للعودة إلى ميرو فوكس';
+
+  @override
+  String get overlayTimeLabel => 'الوقت المتبقي';
+
+  @override
+  String get backgroundPermissions => 'الخلفية والنافذة العائمة';
+
+  @override
+  String get backgroundPermissionsIntro =>
+      'حافظ على تشغيل المؤقت وظهوره بعد مغادرة التطبيق.';
+
+  @override
+  String get overlayPermissionTitle => 'المؤقت العائم';
+
+  @override
+  String get overlayPermissionBody =>
+      'اسمح لميرو فوكس بالرسم فوق التطبيقات الأخرى حتى يبقى مؤقت صغير مرئيًا عند التبديل بين التطبيقات.';
+
+  @override
+  String get overlayPermissionAction => 'منح إذن النافذة العائمة';
+
+  @override
+  String get batteryExemptionTitle => 'تحسين البطارية';
+
+  @override
+  String get batteryExemptionBody =>
+      'بعض الأجهزة توقف مؤقتات الخلفية لتوفير الطاقة. استثنِ ميرو فوكس حتى لا تنقطع جلستك.';
+
+  @override
+  String get batteryExemptionAction => 'استثناء من التحسين';
+
+  @override
+  String get statusEnabled => 'مفعّل';
+
+  @override
+  String get statusDisabled => 'غير مفعّل';
 }

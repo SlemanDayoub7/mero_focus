@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/l10n/l10n_context.dart';
+import '../../../../core/routing/app_router.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_app_bar.dart';
 import '../../../../core/widgets/app_scaffold.dart';
@@ -29,7 +30,16 @@ class PomodoroTimerPage extends ConsumerWidget {
     };
 
     return AppScaffold(
-      appBar: AppAppBar(title: l10n.pomodoro),
+      appBar: AppAppBar(
+        title: l10n.pomodoro,
+        actions: [
+          IconButton(
+            tooltip: l10n.backgroundPermissions,
+            icon: const Icon(Icons.settings_overscan_outlined),
+            onPressed: () => AppRouter.toBackgroundPermissions(context),
+          ),
+        ],
+      ),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(AppSpacing.md),

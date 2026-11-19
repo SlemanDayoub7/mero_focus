@@ -217,6 +217,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Round {round}'**
   String timerRound(int round);
+
+  /// No description provided for @backgroundNotificationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus session running'**
+  String get backgroundNotificationTitle;
+
+  /// No description provided for @backgroundNotificationText.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to return to Mero Focus'**
+  String get backgroundNotificationText;
+
+  /// No description provided for @overlayTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Time remaining'**
+  String get overlayTimeLabel;
+
+  /// No description provided for @backgroundPermissions.
+  ///
+  /// In en, this message translates to:
+  /// **'Background & overlay'**
+  String get backgroundPermissions;
+
+  /// No description provided for @backgroundPermissionsIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep your timer running and visible after you leave the app.'**
+  String get backgroundPermissionsIntro;
+
+  /// No description provided for @overlayPermissionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Floating timer'**
+  String get overlayPermissionTitle;
+
+  /// No description provided for @overlayPermissionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow Mero Focus to draw over other apps so a small timer stays visible when you switch apps.'**
+  String get overlayPermissionBody;
+
+  /// No description provided for @overlayPermissionAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Grant overlay permission'**
+  String get overlayPermissionAction;
+
+  /// No description provided for @batteryExemptionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Battery optimization'**
+  String get batteryExemptionTitle;
+
+  /// No description provided for @batteryExemptionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Some devices stop background timers to save power. Exempt Mero Focus so your session is not interrupted.'**
+  String get batteryExemptionBody;
+
+  /// No description provided for @batteryExemptionAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Exempt from optimization'**
+  String get batteryExemptionAction;
+
+  /// No description provided for @statusEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Enabled'**
+  String get statusEnabled;
+
+  /// No description provided for @statusDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enabled'**
+  String get statusDisabled;
 }
 
 class _AppLocalizationsDelegate

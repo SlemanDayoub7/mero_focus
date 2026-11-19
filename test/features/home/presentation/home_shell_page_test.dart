@@ -4,20 +4,32 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mero_focus/app.dart';
 import 'package:mero_focus/core/database/app_database.dart';
 import 'package:mero_focus/core/di/core_providers.dart';
+import 'package:mero_focus/features/background_overlay/presentation/controllers/background_session_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../background_overlay/helpers/fake_background_services.dart';
 
 void main() {
   late ProviderContainer container;
   late AppDatabase database;
+  late FakeForegroundTimerService foreground;
+  late FakeFloatingOverlayService overlay;
+  late FakeBatteryOptimizationService battery;
 
   setUp(() async {
     SharedPreferences.setMockInitialValues(<String, Object>{});
     final preferences = await SharedPreferences.getInstance();
     database = AppDatabase.forTesting();
+    foreground = FakeForegroundTimerService();
+    overlay = FakeFloatingOverlayService();
+    battery = FakeBatteryOptimizationService();
     container = ProviderContainer(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(preferences),
         appDatabaseProvider.overrideWithValue(database),
+        foregroundTimerServiceProvider.overrideWithValue(foreground),
+        floatingOverlayServiceProvider.overrideWithValue(overlay),
+        batteryOptimizationServiceProvider.overrideWithValue(battery),
       ],
     );
   });

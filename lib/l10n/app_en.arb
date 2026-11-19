@@ -43,5 +43,31 @@
     "placeholders": {
       "round": { "type": "int" }
     }
-  }
+  },
+  "backgroundNotificationTitle": "Focus session running",
+  "@backgroundNotificationTitle": {},
+  "backgroundNotificationText": "Tap to return to Mero Focus",
+  "@backgroundNotificationText": {},
+  "overlayTimeLabel": "Time remaining",
+  "@overlayTimeLabel": {},
+  "backgroundPermissions": "Background & overlay",
+  "@backgroundPermissions": {},
+  "backgroundPermissionsIntro": "Keep your timer running and visible after you leave the app.",
+  "@backgroundPermissionsIntro": {},
+  "overlayPermissionTitle": "Floating timer",
+  "@overlayPermissionTitle": {},
+  "overlayPermissionBody": "Allow Mero Focus to draw over other apps so a small timer stays visible when you switch apps.",
+  "@overlayPermissionBody": {},
+  "overlayPermissionAction": "Grant overlay permission",
+  "@overlayPermissionAction": {},
+  "batteryExemptionTitle": "Battery optimization",
+  "@batteryExemptionTitle": {},
+  "batteryExemptionBody": "Some devices stop background timers to save power. Exempt Mero Focus so your session is not interrupted.",
+  "@batteryExemptionBody": {},
+  "batteryExemptionAction": "Exempt from optimization",
+  "@batteryExemptionAction": {},
+  "statusEnabled": "Enabled",
+  "@statusEnabled": {},
+  "statusDisabled": "Not enabled",
+  "@statusDisabled": {}
 }
