@@ -46,4 +46,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get english => 'English';
+
+  @override
+  String get pomodoroWork => 'Focus';
+
+  @override
+  String get pomodoroShortBreak => 'Short break';
+
+  @override
+  String get pomodoroLongBreak => 'Long break';
+
+  @override
+  String get timerStart => 'Start';
+
+  @override
+  String get timerPause => 'Pause';
+
+  @override
+  String get timerReset => 'Reset';
+
+  @override
+  String timerRound(int round) {
+    return 'Round $round';
+  }
 }

@@ -25,5 +25,23 @@
   "arabic": "العربية",
   "@arabic": {},
   "english": "الإنجليزية",
-  "@english": {}
+  "@english": {},
+  "pomodoroWork": "تركيز",
+  "@pomodoroWork": {},
+  "pomodoroShortBreak": "استراحة قصيرة",
+  "@pomodoroShortBreak": {},
+  "pomodoroLongBreak": "استراحة طويلة",
+  "@pomodoroLongBreak": {},
+  "timerStart": "ابدأ",
+  "@timerStart": {},
+  "timerPause": "إيقاف مؤقت",
+  "@timerPause": {},
+  "timerReset": "إعادة ضبط",
+  "@timerReset": {},
+  "timerRound": "الجولة {round}",
+  "@timerRound": {
+    "placeholders": {
+      "round": { "type": "int" }
+    }
+  }
 }

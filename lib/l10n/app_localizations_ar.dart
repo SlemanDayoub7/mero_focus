@@ -46,4 +46,27 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get english => 'الإنجليزية';
+
+  @override
+  String get pomodoroWork => 'تركيز';
+
+  @override
+  String get pomodoroShortBreak => 'استراحة قصيرة';
+
+  @override
+  String get pomodoroLongBreak => 'استراحة طويلة';
+
+  @override
+  String get timerStart => 'ابدأ';
+
+  @override
+  String get timerPause => 'إيقاف مؤقت';
+
+  @override
+  String get timerReset => 'إعادة ضبط';
+
+  @override
+  String timerRound(int round) {
+    return 'الجولة $round';
+  }
 }
