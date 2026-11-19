@@ -26,23 +26,31 @@ class SettingsPage extends StatelessWidget {
           children: [
             AppText(context.translate(LocaleKeys.theme_section), variant: AppTextVariant.heading),
             const SizedBox(height: AppSpacing.sm),
-            _ThemeOption(
-              label: context.translate(LocaleKeys.theme_light),
-              mode: ThemeMode.light,
+            RadioGroup<ThemeMode>(
               groupValue: currentMode,
-              onChanged: context.read<ThemeCubit>().setThemeMode,
-            ),
-            _ThemeOption(
-              label: context.translate(LocaleKeys.theme_dark),
-              mode: ThemeMode.dark,
-              groupValue: currentMode,
-              onChanged: context.read<ThemeCubit>().setThemeMode,
-            ),
-            _ThemeOption(
-              label: context.translate(LocaleKeys.theme_system),
-              mode: ThemeMode.system,
-              groupValue: currentMode,
-              onChanged: context.read<ThemeCubit>().setThemeMode,
+              onChanged: (mode) {
+                if (mode != null) context.read<ThemeCubit>().setThemeMode(mode);
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _ThemeOption(
+                    label: context.translate(LocaleKeys.theme_light),
+                    mode: ThemeMode.light,
+                    selected: currentMode == ThemeMode.light,
+                  ),
+                  _ThemeOption(
+                    label: context.translate(LocaleKeys.theme_dark),
+                    mode: ThemeMode.dark,
+                    selected: currentMode == ThemeMode.dark,
+                  ),
+                  _ThemeOption(
+                    label: context.translate(LocaleKeys.theme_system),
+                    mode: ThemeMode.system,
+                    selected: currentMode == ThemeMode.system,
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: AppSpacing.lg),
             AppText(context.translate(LocaleKeys.language_section), variant: AppTextVariant.heading),
@@ -75,14 +83,12 @@ class SettingsPage extends StatelessWidget {
 class _ThemeOption extends StatelessWidget {
   final String label;
   final ThemeMode mode;
-  final ThemeMode groupValue;
-  final ValueChanged<ThemeMode> onChanged;
+  final bool selected;
 
   const _ThemeOption({
     required this.label,
     required this.mode,
-    required this.groupValue,
-    required this.onChanged,
+    required this.selected,
   });
 
   @override
@@ -90,8 +96,7 @@ class _ThemeOption extends StatelessWidget {
     return RadioListTile<ThemeMode>(
       title: AppText(label),
       value: mode,
-      groupValue: groupValue,
-      onChanged: (v) => onChanged(v!),
+      selected: selected,
       contentPadding: EdgeInsets.zero,
     );
   }
