@@ -5,6 +5,7 @@ import 'core/di/core_providers.dart';
 import 'core/l10n/l10n_context.dart';
 import 'core/routing/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'features/background_overlay/presentation/widgets/background_session_coordinator.dart';
 import 'features/home/presentation/pages/home_shell_page.dart';
 import 'l10n/app_localizations.dart';
 
@@ -26,7 +27,7 @@ class MeroFocusApp extends ConsumerWidget {
       darkTheme: AppTheme.dark,
       themeMode: themeMode,
       routes: AppRouter.routes,
-      home: const HomeShellPage(),
+      home: const BackgroundSessionCoordinator(child: HomeShellPage()),
     );
   }
 }

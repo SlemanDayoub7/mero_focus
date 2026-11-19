@@ -43,5 +43,31 @@
     "placeholders": {
       "round": { "type": "int" }
     }
-  }
+  },
+  "backgroundNotificationTitle": "جلسة التركيز قيد التشغيل",
+  "@backgroundNotificationTitle": {},
+  "backgroundNotificationText": "اضغط للعودة إلى ميرو فوكس",
+  "@backgroundNotificationText": {},
+  "overlayTimeLabel": "الوقت المتبقي",
+  "@overlayTimeLabel": {},
+  "backgroundPermissions": "الخلفية والنافذة العائمة",
+  "@backgroundPermissions": {},
+  "backgroundPermissionsIntro": "حافظ على تشغيل المؤقت وظهوره بعد مغادرة التطبيق.",
+  "@backgroundPermissionsIntro": {},
+  "overlayPermissionTitle": "المؤقت العائم",
+  "@overlayPermissionTitle": {},
+  "overlayPermissionBody": "اسمح لميرو فوكس بالرسم فوق التطبيقات الأخرى حتى يبقى مؤقت صغير مرئيًا عند التبديل بين التطبيقات.",
+  "@overlayPermissionBody": {},
+  "overlayPermissionAction": "منح إذن النافذة العائمة",
+  "@overlayPermissionAction": {},
+  "batteryExemptionTitle": "تحسين البطارية",
+  "@batteryExemptionTitle": {},
+  "batteryExemptionBody": "بعض الأجهزة توقف مؤقتات الخلفية لتوفير الطاقة. استثنِ ميرو فوكس حتى لا تنقطع جلستك.",
+  "@batteryExemptionBody": {},
+  "batteryExemptionAction": "استثناء من التحسين",
+  "@batteryExemptionAction": {},
+  "statusEnabled": "مفعّل",
+  "@statusEnabled": {},
+  "statusDisabled": "غير مفعّل",
+  "@statusDisabled": {}
 }

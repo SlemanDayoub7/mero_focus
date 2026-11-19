@@ -3,19 +3,27 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mero_focus/core/database/app_database.dart';
 import 'package:mero_focus/core/di/core_providers.dart';
+import 'package:mero_focus/features/background_overlay/presentation/controllers/background_session_controller.dart';
 import 'package:mero_focus/features/pomodoro/data/services/timer_ticker.dart';
 import 'package:mero_focus/features/pomodoro/presentation/pages/pomodoro_timer_page.dart';
 import 'package:mero_focus/l10n/app_localizations.dart';
 
+import '../../../background_overlay/helpers/fake_background_services.dart';
 import '../../helpers/fake_timer_ticker.dart';
 
 void main() {
   late FakeTimerTicker ticker;
   late AppDatabase database;
+  late FakeForegroundTimerService foreground;
+  late FakeFloatingOverlayService overlay;
+  late FakeBatteryOptimizationService battery;
 
   setUp(() {
     ticker = FakeTimerTicker();
     database = AppDatabase.forTesting();
+    foreground = FakeForegroundTimerService();
+    overlay = FakeFloatingOverlayService();
+    battery = FakeBatteryOptimizationService();
   });
 
   tearDown(() => database.close());
@@ -26,6 +34,9 @@ void main() {
         overrides: [
           timerTickerProvider.overrideWithValue(ticker),
           appDatabaseProvider.overrideWithValue(database),
+          foregroundTimerServiceProvider.overrideWithValue(foreground),
+          floatingOverlayServiceProvider.overrideWithValue(overlay),
+          batteryOptimizationServiceProvider.overrideWithValue(battery),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
