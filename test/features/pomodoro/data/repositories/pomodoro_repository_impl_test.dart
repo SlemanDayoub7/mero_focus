@@ -10,6 +10,9 @@ void main() {
     addTearDown(database.close);
     final repository = PomodoroRepositoryImpl(database);
 
+    final taskId = await database
+        .into(database.tasks)
+        .insert(db.TasksCompanion.insert(title: 'Read chapter 1'));
     final now = DateTime(2026, 3, 1, 10);
     final session = FocusSession(
       startTime: now.subtract(SessionType.longBreak.duration),
@@ -17,6 +20,8 @@ void main() {
       plannedDuration: SessionType.longBreak.duration,
       actualDuration: SessionType.longBreak.duration,
       sessionType: SessionType.longBreak,
+      label: 'Math',
+      taskId: taskId,
     );
 
     final id = await repository.saveSession(session);
@@ -33,6 +38,8 @@ void main() {
     expect(stored.sessionType, SessionType.longBreak);
     expect(stored.completed, isTrue);
     expect(stored.completionPercentage, 100);
+    expect(stored.label, 'Math');
+    expect(stored.taskId, taskId);
   });
 
   test('PomodoroRepositoryImpl returns newest sessions first', () async {

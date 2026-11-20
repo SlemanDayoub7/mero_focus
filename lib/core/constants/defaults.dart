@@ -7,6 +7,8 @@ abstract final class AppDefaults {
   static const int shortBreakSec = 300;
   static const int longBreakSec = 900;
   static const int roundsBeforeLongBreak = 4;
+  static const int maxDurationSec = 10800;
+  static const int dailyGoalMinutes = 120;
 
   static const String themeId = 'default';
   static const String backgroundId = 'default';

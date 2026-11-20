@@ -11,6 +11,8 @@ class FocusSession {
     required this.sessionType,
     this.completed = true,
     this.completionPercentage = 100,
+    this.label = '',
+    this.taskId,
   });
 
   final int? id;
@@ -21,4 +23,8 @@ class FocusSession {
   final SessionType sessionType;
   final bool completed;
   final int completionPercentage;
+
+  /// Snapshot of the subject/task name, kept even after those records are gone.
+  final String label;
+  final int? taskId;
 }

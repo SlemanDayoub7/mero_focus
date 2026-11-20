@@ -2,6 +2,8 @@
 
 راجع ADR-0004 لأسباب اختيار Drift، وADR-0005 لمبدأ "البيانات الخام فقط" الذي بُني عليه هذا التصميم.
 
+نسخة المخطط الحالية هي **2**. أضافت النسخة 2 مهام المخطط، وتسمية الجلسات وربطها بالمهام، وأعمدة تفضيلات البومودورو؛ وتحافظ هجرة v1 → v2 على الصفوف الموجودة.
+
 ## الجداول
 
 ### `FocusSessions`
@@ -18,6 +20,8 @@ class FocusSessions extends Table {
   BoolColumn get completed => boolean().withDefault(const Constant(true))();
   IntColumn get completionPercentage => integer().withDefault(const Constant(100))();
   IntColumn get tagId => integer().nullable().references(Tags, #id)();
+  TextColumn get label => text().withDefault(const Constant(''))();
+  IntColumn get taskId => integer().nullable().references(Tasks, #id)();
 
   @override
   List<Set<Column>> get uniqueKeys => [];
@@ -34,6 +38,24 @@ class Tags extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
   TextColumn get colorHex => text()();
+}
+```
+
+### `Tasks`
+مهام المخطط؛ يمكن ربط المهمة بمادة (`Tags`) وبجلسات التركيز.
+
+```dart
+@TableIndex(name: 'idx_task_due_date', columns: {#dueDate})
+class Tasks extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get title => text()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  IntColumn get subjectId => integer().nullable().references(Tags, #id)();
+  IntColumn get priority => integer().withDefault(const Constant(1))();
+  DateTimeColumn get dueDate => dateTime().nullable()();
+  IntColumn get estimatedPomodoros => integer().withDefault(const Constant(1))();
+  BoolColumn get done => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get completedAt => dateTime().nullable()();
 }
 ```
 
@@ -89,6 +111,12 @@ class AppSettings extends Table {
   IntColumn get shortBreakSec => integer().withDefault(const Constant(300))();
   IntColumn get longBreakSec => integer().withDefault(const Constant(900))();
   IntColumn get roundsBeforeLongBreak => integer().withDefault(const Constant(4))();
+  IntColumn get maxDurationSec => integer().withDefault(const Constant(10800))();
+  IntColumn get dailyGoalMinutes => integer().withDefault(const Constant(120))();
+  BoolColumn get strictMode => boolean().withDefault(const Constant(false))();
+  BoolColumn get countUp => boolean().withDefault(const Constant(false))();
+  BoolColumn get studentMode => boolean().withDefault(const Constant(false))();
+  BoolColumn get studentPromptSeen => boolean().withDefault(const Constant(false))();
   TextColumn get themeId => text().withDefault(const Constant('default'))();
   TextColumn get backgroundId => text().withDefault(const Constant('default'))();
   TextColumn get whiteNoiseSoundId => text().nullable()();

@@ -15,6 +15,7 @@ part 'app_database.g.dart';
   tables: [
     FocusSessions,
     Tags,
+    Tasks,
     Habits,
     HabitLogs,
     AppLockRules,
@@ -28,7 +29,27 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting() : super(NativeDatabase.memory());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onUpgrade: (m, from, to) async {
+      if (from == 1 && to == 2) {
+        // Only the new table/index are created; existing tables (and their
+        // indexes) are migrated with explicit `addColumn` calls below.
+        await m.createTable(tasks);
+        await m.create(idxTaskDueDate);
+        await m.addColumn(focusSessions, focusSessions.label);
+        await m.addColumn(focusSessions, focusSessions.taskId);
+        await m.addColumn(appSettings, appSettings.maxDurationSec);
+        await m.addColumn(appSettings, appSettings.dailyGoalMinutes);
+        await m.addColumn(appSettings, appSettings.strictMode);
+        await m.addColumn(appSettings, appSettings.countUp);
+        await m.addColumn(appSettings, appSettings.studentMode);
+        await m.addColumn(appSettings, appSettings.studentPromptSeen);
+      }
+    },
+  );
 }
 
 /// Opens the on-device database file in the app documents directory.
