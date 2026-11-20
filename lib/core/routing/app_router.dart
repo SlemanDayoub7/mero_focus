@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../../features/background_overlay/presentation/pages/background_permissions_page.dart';
 import '../../features/capture/presentation/pages/placeholder_capture_page.dart';
+import '../../features/pomodoro/presentation/pages/done_tasks_page.dart';
 import '../../features/pomodoro/presentation/pages/pomodoro_timer_page.dart';
+import '../../features/pomodoro/presentation/pages/reports_page.dart';
+import '../../features/pomodoro/presentation/pages/subjects_page.dart';
+import '../../features/pomodoro/presentation/pages/tasks_page.dart';
 import '../../features/review/presentation/pages/placeholder_review_page.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
 
@@ -14,25 +18,45 @@ abstract final class AppRouter {
   static const String home = '/';
   static const String backgroundPermissions = '/background-permissions';
   static const String pomodoro = '/pomodoro';
+  static const String tasks = '/tasks';
+  static const String doneTasks = '/tasks/done';
+  static const String subjects = '/subjects';
+  static const String reports = '/reports';
   static const String review = '/review';
   static const String capture = '/capture';
   static const String settings = '/settings';
 
   /// Routes below the root; `/` is owned by `MaterialApp.home`.
   static Map<String, WidgetBuilder> get routes => <String, WidgetBuilder>{
-        backgroundPermissions: (_) => const BackgroundPermissionsPage(),
-        pomodoro: (_) => const PomodoroTimerPage(),
-        review: (_) => const PlaceholderReviewPage(),
-        capture: (_) => const PlaceholderCapturePage(),
-        settings: (_) => const SettingsPage(),
-      };
+    backgroundPermissions: (_) => const BackgroundPermissionsPage(),
+    pomodoro: (_) => const PomodoroTimerPage(),
+    tasks: (_) => const TasksPage(),
+    doneTasks: (_) => const DoneTasksPage(),
+    subjects: (_) => const SubjectsPage(),
+    reports: (_) => const ReportsPage(),
+    review: (_) => const PlaceholderReviewPage(),
+    capture: (_) => const PlaceholderCapturePage(),
+    settings: (_) => const SettingsPage(),
+  };
 
   static Future<T?> toBackgroundPermissions<T extends Object?>(
-          BuildContext context) =>
-      Navigator.of(context).pushNamed<T>(backgroundPermissions);
+    BuildContext context,
+  ) => Navigator.of(context).pushNamed<T>(backgroundPermissions);
 
   static Future<T?> toPomodoro<T extends Object?>(BuildContext context) =>
       Navigator.of(context).pushNamed<T>(pomodoro);
+
+  static Future<T?> toTasks<T extends Object?>(BuildContext context) =>
+      Navigator.of(context).pushNamed<T>(tasks);
+
+  static Future<T?> toDoneTasks<T extends Object?>(BuildContext context) =>
+      Navigator.of(context).pushNamed<T>(doneTasks);
+
+  static Future<T?> toSubjects<T extends Object?>(BuildContext context) =>
+      Navigator.of(context).pushNamed<T>(subjects);
+
+  static Future<T?> toReports<T extends Object?>(BuildContext context) =>
+      Navigator.of(context).pushNamed<T>(reports);
 
   static Future<T?> toReview<T extends Object?>(BuildContext context) =>
       Navigator.of(context).pushNamed<T>(review);

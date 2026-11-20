@@ -15,6 +15,10 @@ void main() {
         AppRouter.review,
         AppRouter.capture,
         AppRouter.settings,
+        AppRouter.tasks,
+        AppRouter.doneTasks,
+        AppRouter.subjects,
+        AppRouter.reports,
       ]),
     );
   });

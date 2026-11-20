@@ -5,6 +5,8 @@ class AppScaffold extends StatelessWidget {
   final Widget body;
   final PreferredSizeWidget? appBar;
   final Widget? bottomNavigationBar;
+  final Widget? floatingActionButton;
+  final Widget? drawer;
   final bool applySafeArea;
 
   const AppScaffold({
@@ -12,6 +14,8 @@ class AppScaffold extends StatelessWidget {
     required this.body,
     this.appBar,
     this.bottomNavigationBar,
+    this.floatingActionButton,
+    this.drawer,
     this.applySafeArea = true,
   });
 
@@ -21,6 +25,8 @@ class AppScaffold extends StatelessWidget {
       backgroundColor: context.colors.surface,
       appBar: appBar,
       bottomNavigationBar: bottomNavigationBar,
+      floatingActionButton: floatingActionButton,
+      drawer: drawer,
       body: applySafeArea ? SafeArea(child: body) : body,
     );
   }
