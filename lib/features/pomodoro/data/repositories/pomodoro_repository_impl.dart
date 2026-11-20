@@ -13,7 +13,9 @@ class PomodoroRepositoryImpl implements PomodoroRepository {
 
   @override
   Future<int> saveSession(FocusSession session) {
-    return _database.into(_database.focusSessions).insert(
+    return _database
+        .into(_database.focusSessions)
+        .insert(
           db.FocusSessionsCompanion.insert(
             startTime: session.startTime,
             endTime: Value(session.endTime),
@@ -22,6 +24,8 @@ class PomodoroRepositoryImpl implements PomodoroRepository {
             sessionType: session.sessionType.storageValue,
             completed: Value(session.completed),
             completionPercentage: Value(session.completionPercentage),
+            label: Value(session.label),
+            taskId: Value(session.taskId),
           ),
         );
   }
@@ -34,6 +38,15 @@ class PomodoroRepositoryImpl implements PomodoroRepository {
     return rows.map(_toEntity).toList(growable: false);
   }
 
+  @override
+  Stream<List<FocusSession>> watchSessions() {
+    final query = _database.select(_database.focusSessions)
+      ..orderBy([(row) => OrderingTerm.desc(row.startTime)]);
+    return query.watch().map(
+      (rows) => rows.map(_toEntity).toList(growable: false),
+    );
+  }
+
   FocusSession _toEntity(db.FocusSession row) {
     return FocusSession(
       id: row.id,
@@ -44,6 +57,8 @@ class PomodoroRepositoryImpl implements PomodoroRepository {
       sessionType: SessionType.fromStorage(row.sessionType),
       completed: row.completed,
       completionPercentage: row.completionPercentage,
+      label: row.label,
+      taskId: row.taskId,
     );
   }
 }

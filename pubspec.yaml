@@ -55,6 +55,8 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   build_runner: 2.15.1
   drift_dev: 2.34.0
+  # Used by the schema-migration test to author a real v1 SQLite file.
+  sqlite3: ^3.5.2
   bloc_test: ^10.0.0
   mocktail: ^1.0.5
 
