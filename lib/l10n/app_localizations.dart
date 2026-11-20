@@ -295,6 +295,384 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not enabled'**
   String get statusDisabled;
+
+  /// No description provided for @tasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks'**
+  String get tasks;
+
+  /// No description provided for @tasksToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get tasksToday;
+
+  /// No description provided for @tasksTomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow'**
+  String get tasksTomorrow;
+
+  /// No description provided for @tasksWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get tasksWeek;
+
+  /// No description provided for @tasksDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get tasksDone;
+
+  /// No description provided for @tasksCompletedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed tasks'**
+  String get tasksCompletedCount;
+
+  /// No description provided for @tasksRemainingCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining tasks'**
+  String get tasksRemainingCount;
+
+  /// No description provided for @tasksElapsedTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Time spent'**
+  String get tasksElapsedTime;
+
+  /// No description provided for @tasksEstimatedTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated time'**
+  String get tasksEstimatedTime;
+
+  /// No description provided for @tasksShowDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Show completed'**
+  String get tasksShowDone;
+
+  /// No description provided for @tasksHideDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide completed'**
+  String get tasksHideDone;
+
+  /// No description provided for @tasksAddHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a task...'**
+  String get tasksAddHint;
+
+  /// No description provided for @tasksSort.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort tasks'**
+  String get tasksSort;
+
+  /// No description provided for @tasksSortProject.
+  ///
+  /// In en, this message translates to:
+  /// **'By subject'**
+  String get tasksSortProject;
+
+  /// No description provided for @tasksSortDueDate.
+  ///
+  /// In en, this message translates to:
+  /// **'By due date'**
+  String get tasksSortDueDate;
+
+  /// No description provided for @tasksSortPriority.
+  ///
+  /// In en, this message translates to:
+  /// **'By priority'**
+  String get tasksSortPriority;
+
+  /// No description provided for @tasksSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Task selected for focus'**
+  String get tasksSelected;
+
+  /// No description provided for @tasksEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No tasks in this range'**
+  String get tasksEmpty;
+
+  /// No description provided for @subjects.
+  ///
+  /// In en, this message translates to:
+  /// **'Subjects'**
+  String get subjects;
+
+  /// No description provided for @subjectsNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New subject'**
+  String get subjectsNew;
+
+  /// No description provided for @subjectsNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Subject name'**
+  String get subjectsNameHint;
+
+  /// No description provided for @subjectsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your subjects to pick them later'**
+  String get subjectsEmpty;
+
+  /// No description provided for @actionCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get actionCancel;
+
+  /// No description provided for @actionAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get actionAdd;
+
+  /// No description provided for @actionSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get actionSave;
+
+  /// No description provided for @actionDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get actionDelete;
+
+  /// No description provided for @actionReopen.
+  ///
+  /// In en, this message translates to:
+  /// **'Reopen'**
+  String get actionReopen;
+
+  /// No description provided for @actionClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get actionClear;
+
+  /// No description provided for @taskTitleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Task'**
+  String get taskTitleLabel;
+
+  /// No description provided for @taskEstimatedPomodoros.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated pomodoros'**
+  String get taskEstimatedPomodoros;
+
+  /// No description provided for @taskPomodorosCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} pomodoros'**
+  String taskPomodorosCount(int count);
+
+  /// No description provided for @taskPriorityLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get taskPriorityLow;
+
+  /// No description provided for @taskPriorityMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get taskPriorityMedium;
+
+  /// No description provided for @taskPriorityHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get taskPriorityHigh;
+
+  /// No description provided for @taskNoDueDate.
+  ///
+  /// In en, this message translates to:
+  /// **'No due date'**
+  String get taskNoDueDate;
+
+  /// No description provided for @taskStartFocus.
+  ///
+  /// In en, this message translates to:
+  /// **'Start focus'**
+  String get taskStartFocus;
+
+  /// No description provided for @taskPick.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a task'**
+  String get taskPick;
+
+  /// No description provided for @reports.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get reports;
+
+  /// No description provided for @reportsPomodoro.
+  ///
+  /// In en, this message translates to:
+  /// **'Pomodoro report'**
+  String get reportsPomodoro;
+
+  /// No description provided for @reportsTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks report'**
+  String get reportsTasks;
+
+  /// No description provided for @rangeDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily'**
+  String get rangeDay;
+
+  /// No description provided for @rangeWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get rangeWeek;
+
+  /// No description provided for @rangeMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get rangeMonth;
+
+  /// No description provided for @rangeYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly'**
+  String get rangeYear;
+
+  /// No description provided for @reportTotalFocus.
+  ///
+  /// In en, this message translates to:
+  /// **'Total focus time'**
+  String get reportTotalFocus;
+
+  /// No description provided for @reportThisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get reportThisWeek;
+
+  /// No description provided for @reportToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get reportToday;
+
+  /// No description provided for @reportCompletedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed focus sessions'**
+  String get reportCompletedCount;
+
+  /// No description provided for @reportCompletedWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed this week'**
+  String get reportCompletedWeek;
+
+  /// No description provided for @reportCompletedToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed today'**
+  String get reportCompletedToday;
+
+  /// No description provided for @reportDailyGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily goal: {current} of {goal}'**
+  String reportDailyGoal(String current, String goal);
+
+  /// No description provided for @reportRangeFocus.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus time'**
+  String get reportRangeFocus;
+
+  /// No description provided for @reportFocusDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus days'**
+  String get reportFocusDays;
+
+  /// No description provided for @reportAveragePerDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Average / day'**
+  String get reportAveragePerDay;
+
+  /// No description provided for @reportGoalDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Days meeting goal'**
+  String get reportGoalDays;
+
+  /// No description provided for @reportCopySummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy summary'**
+  String get reportCopySummary;
+
+  /// No description provided for @reportCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get reportCopied;
+
+  /// No description provided for @reportRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'Records'**
+  String get reportRecords;
+
+  /// No description provided for @reportNoData.
+  ///
+  /// In en, this message translates to:
+  /// **'No data'**
+  String get reportNoData;
+
+  /// No description provided for @reportUntitled.
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled'**
+  String get reportUntitled;
+
+  /// No description provided for @reportSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Total focus: {total}\nCompleted sessions: {completed}\nFocus days: {days}'**
+  String reportSummary(String total, String completed, String days);
+
+  /// No description provided for @durationMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String durationMinutes(int minutes);
+
+  /// No description provided for @durationHoursMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} h {minutes} min'**
+  String durationHoursMinutes(int hours, int minutes);
 }
 
 class _AppLocalizationsDelegate

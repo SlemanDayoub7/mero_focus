@@ -8,6 +8,7 @@ import '../../../../core/widgets/app_app_bar.dart';
 import '../../../../core/widgets/app_scaffold.dart';
 import '../../domain/entities/session_type.dart';
 import '../controllers/pomodoro_timer_controller.dart';
+import '../sheets/task_picker_sheet.dart';
 import '../widgets/phase_indicator.dart';
 import '../widgets/pomodoro_timer_display.dart';
 import '../widgets/timer_controls.dart';
@@ -33,6 +34,15 @@ class PomodoroTimerPage extends ConsumerWidget {
       appBar: AppAppBar(
         title: l10n.pomodoro,
         actions: [
+          IconButton(
+            tooltip: l10n.taskPick,
+            icon: const Icon(Icons.playlist_add_check_circle_outlined),
+            onPressed: () => showModalBottomSheet<void>(
+              context: context,
+              isScrollControlled: true,
+              builder: (_) => const TaskPickerSheet(),
+            ),
+          ),
           IconButton(
             tooltip: l10n.backgroundPermissions,
             icon: const Icon(Icons.settings_overscan_outlined),

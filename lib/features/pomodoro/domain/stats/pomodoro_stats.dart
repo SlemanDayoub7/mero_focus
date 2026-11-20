@@ -15,6 +15,10 @@ DateTime startOfWeek(DateTime value) {
 bool isSameDay(DateTime a, DateTime b) =>
     a.year == b.year && a.month == b.month && a.day == b.day;
 
+/// Deliberately wide bounds for "all time" aggregations.
+final DateTime allTimeFrom = DateTime(2000);
+final DateTime allTimeTo = DateTime(2100);
+
 /// Half-open `[from, to)` window containing [now].
 ({DateTime from, DateTime to}) windowFor(StatRange range, DateTime now) {
   final week = startOfWeek(now);

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/l10n/l10n_context.dart';
 import '../../../capture/presentation/pages/placeholder_capture_page.dart';
 import '../../../pomodoro/presentation/pages/pomodoro_timer_page.dart';
+import '../../../pomodoro/presentation/pages/tasks_page.dart';
 import '../../../review/presentation/pages/placeholder_review_page.dart';
 import '../../../settings/presentation/pages/settings_page.dart';
 
@@ -18,6 +19,7 @@ class _HomeShellPageState extends State<HomeShellPage> {
 
   static const List<Widget> _pages = <Widget>[
     PomodoroTimerPage(),
+    TasksPage(),
     PlaceholderReviewPage(),
     PlaceholderCapturePage(),
     SettingsPage(),
@@ -34,6 +36,10 @@ class _HomeShellPageState extends State<HomeShellPage> {
           NavigationDestination(
             icon: const Icon(Icons.timer_outlined),
             label: context.l10n.pomodoro,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.checklist_outlined),
+            label: context.l10n.tasks,
           ),
           NavigationDestination(
             icon: const Icon(Icons.refresh),
