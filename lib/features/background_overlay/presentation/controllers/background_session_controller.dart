@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../data/services/battery_optimization_service_impl.dart';
 import '../../data/services/floating_overlay_service_impl.dart';
@@ -10,8 +13,9 @@ final foregroundTimerServiceProvider = Provider<ForegroundTimerService>((ref) {
   return ForegroundTimerServiceImpl();
 });
 
+// Stateful (remembers whether it opened an overlay), so not const.
 final floatingOverlayServiceProvider = Provider<FloatingOverlayService>((ref) {
-  return const FloatingOverlayServiceImpl();
+  return FloatingOverlayServiceImpl();
 });
 
 final batteryOptimizationServiceProvider =
@@ -26,6 +30,40 @@ final overlayPermissionGrantedProvider = FutureProvider<bool>((ref) {
 final batteryExemptionGrantedProvider = FutureProvider<bool>((ref) {
   return ref.watch(batteryOptimizationServiceProvider).isExempt();
 });
+
+/// Whether the user wants the floating timer over other apps. Off by
+/// default: the notification already shows the live time, and the overlay
+/// permission is only requested when the user switches this on.
+final overlayEnabledProvider = NotifierProvider<OverlayEnabledNotifier, bool>(
+  OverlayEnabledNotifier.new,
+);
+
+class OverlayEnabledNotifier extends Notifier<bool> {
+  static const String _key = 'overlay_enabled';
+  bool _disposed = false;
+
+  @override
+  bool build() {
+    _disposed = false;
+    ref.onDispose(() => _disposed = true);
+    unawaited(_load());
+    return false;
+  }
+
+  Future<void> _load() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (_disposed) return;
+      state = prefs.getBool(_key) ?? false;
+    } catch (_) {}
+  }
+
+  Future<void> setEnabled(bool value) async {
+    state = value;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_key, value);
+  }
+}
 
 class BackgroundSessionState {
   const BackgroundSessionState({
@@ -114,15 +152,23 @@ class BackgroundSessionController extends Notifier<BackgroundSessionState> {
           return;
         }
         state = state.copyWith(serviceRunning: true, clearError: true);
-      } else if (!shouldRun && state.serviceRunning) {
+      } else if (shouldRun) {
+        // Keep the notification showing the live time.
+        await foreground.update(
+          notificationTitle: notificationTitle,
+          notificationText: notificationText,
+        );
+      } else if (state.serviceRunning) {
         await foreground.stop();
         state = state.copyWith(serviceRunning: false, clearError: true);
       }
 
-      final shouldShow = BackgroundSessionPolicy.shouldShowOverlay(
-        timerRunning: timerRunning,
-        appInBackground: appInBackground,
-      );
+      final shouldShow =
+          ref.read(overlayEnabledProvider) &&
+          BackgroundSessionPolicy.shouldShowOverlay(
+            timerRunning: timerRunning,
+            appInBackground: appInBackground,
+          );
       if (shouldShow && !state.overlayVisible) {
         final shown = await overlay.show(
           notificationTitle: notificationTitle,
@@ -131,7 +177,8 @@ class BackgroundSessionController extends Notifier<BackgroundSessionState> {
         );
         state = state.copyWith(overlayVisible: shown);
       } else if (shouldShow && state.overlayVisible) {
-        await overlay.update(overlayData);
+        final stillThere = await overlay.update(overlayData);
+        if (!stillThere) state = state.copyWith(overlayVisible: false);
       } else if (!shouldShow && state.overlayVisible) {
         await overlay.close();
         state = state.copyWith(overlayVisible: false);

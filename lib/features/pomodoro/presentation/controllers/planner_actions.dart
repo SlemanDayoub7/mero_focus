@@ -39,7 +39,59 @@ class PlannerActions {
     return subjects.addSubject(Subject(name: name, colorHex: colorHex));
   }
 
+  Future<void> updateSubject(Subject subject) {
+    final name = subject.name.trim();
+    if (name.isEmpty) {
+      return Future.error(
+        ArgumentError.value(subject.name, 'name', 'must not be empty'),
+      );
+    }
+    return subjects.updateSubject(subject.copyWith(name: name));
+  }
+
   Future<void> removeSubject(int id) => subjects.removeSubject(id);
+
+  /// Tapping a subject adds ONE task for today, named after the subject.
+  /// Tapping again on the same day reuses that task (re-opening it if it was
+  /// completed). On another day the user must tap again to get a new task.
+  Future<int> taskForSubject(Subject subject) async {
+    final all = await tasks.watchTasks().first;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    for (final task in all) {
+      final id = task.id;
+      if (id == null ||
+          task.subjectId != subject.id ||
+          task.title != subject.name) {
+        continue;
+      }
+      final due = task.effectiveDue;
+      if (due.year == today.year &&
+          due.month == today.month &&
+          due.day == today.day) {
+        if (task.done) await setTaskDone(task, done: false);
+        return id;
+      }
+    }
+    return tasks.addTask(
+      Task(
+        title: subject.name,
+        createdAt: now,
+        dueDate: today,
+        subjectId: subject.id,
+      ),
+    );
+  }
+
+  /// True for a task created by tapping a subject (same name, same subject).
+  static bool isSubjectDailyTask(Task task, List<Subject> subjects) {
+    final subjectId = task.subjectId;
+    if (subjectId == null) return false;
+    for (final subject in subjects) {
+      if (subject.id == subjectId) return subject.name == task.title;
+    }
+    return false;
+  }
 
   Future<int> addTask(Task task) => tasks.addTask(task);
 

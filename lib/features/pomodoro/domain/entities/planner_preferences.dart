@@ -1,5 +1,8 @@
 import '../../../../core/constants/defaults.dart';
 
+/// Default daily focus goal: 3 hours. The user can change it from the reports.
+const int kDefaultDailyGoalMinutes = 180;
+
 /// Pomodoro-specific slice of the single `AppSettings` row.
 class PlannerPreferences {
   const PlannerPreferences({
@@ -10,7 +13,7 @@ class PlannerPreferences {
     this.longBreakDuration = const Duration(seconds: AppDefaults.longBreakSec),
     this.roundsBeforeLongBreak = AppDefaults.roundsBeforeLongBreak,
     this.maxDuration = const Duration(seconds: AppDefaults.maxDurationSec),
-    this.dailyGoalMinutes = AppDefaults.dailyGoalMinutes,
+    this.dailyGoalMinutes = kDefaultDailyGoalMinutes,
     this.strictMode = false,
     this.countUp = false,
     this.whiteNoiseSoundId,

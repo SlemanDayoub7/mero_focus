@@ -20,7 +20,7 @@ dependencies:
 
   # Local database.
   drift: 2.34.0
-  sqlite3_flutter_libs: ^0.6.0+eol
+  sqlite3: ^3.5.2
   path_provider: ^2.1.6
   path: ^1.9.1
 
@@ -48,6 +48,10 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   equatable: ^3.0.0
+  audioplayers: ^6.1.0
+  image_picker: ^1.1.2
+  home_widget: ^0.9.0
+  timezone: ^0.10.0
 
 dev_dependencies:
   flutter_test:
@@ -56,15 +60,27 @@ dev_dependencies:
   build_runner: 2.15.1
   drift_dev: 2.34.0
   # Used by the schema-migration test to author a real v1 SQLite file.
-  sqlite3: ^3.5.2
   bloc_test: ^10.0.0
   mocktail: ^1.0.5
+
+dependency_overrides:
+  archive: ^4.4.0
+  image: ^4.11.1
 
 flutter:
   uses-material-design: true
   generate: true
-
+  fonts:
+    - family: Changa
+      fonts:
+        - asset: assets/fonts/Changa-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Changa-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Changa-Bold.ttf
+          weight: 700
   assets:
     - assets/images/
     - assets/fonts/
     - assets/translations/
+    - assets/sounds/

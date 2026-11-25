@@ -16,12 +16,27 @@ import '../controllers/background_session_controller.dart';
 class BackgroundPermissionsPage extends ConsumerWidget {
   const BackgroundPermissionsPage({super.key});
 
+  /// Asks for the overlay permission only when the user turns the option on.
+  Future<void> _toggleOverlay(
+    BackgroundSessionController controller,
+    WidgetRef ref,
+    bool value, {
+    required bool alreadyGranted,
+  }) async {
+    if (value) {
+      final granted = alreadyGranted || await controller.requestOverlayPermission();
+      if (!granted) return;
+    }
+    await ref.read(overlayEnabledProvider.notifier).setEnabled(value);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final overlay = ref.watch(overlayPermissionGrantedProvider);
     final battery = ref.watch(batteryExemptionGrantedProvider);
     final controller = ref.read(backgroundSessionProvider.notifier);
+    final overlayEnabled = ref.watch(overlayEnabledProvider);
 
     return AppScaffold(
       appBar: AppAppBar(title: l10n.backgroundPermissions),
@@ -32,19 +47,20 @@ class BackgroundPermissionsPage extends ConsumerWidget {
           children: [
             AppText(l10n.backgroundPermissionsIntro),
             const SizedBox(height: AppSpacing.lg),
-            _PermissionCard(
-              title: l10n.overlayPermissionTitle,
-              body: l10n.overlayPermissionBody,
-              status: overlay.when(
-                data: (granted) =>
-                    granted ? l10n.statusEnabled : l10n.statusDisabled,
-                loading: () => l10n.statusDisabled,
-                error: (_, _) => l10n.statusDisabled,
+            Card(
+              child: SwitchListTile(
+                title: Text(l10n.overlayPermissionTitle),
+                subtitle: Text(l10n.overlayPermissionBody),
+                value: overlayEnabled,
+                onChanged: (value) => unawaited(
+                  _toggleOverlay(
+                    controller,
+                    ref,
+                    value,
+                    alreadyGranted: overlay.value ?? false,
+                  ),
+                ),
               ),
-              actionLabel: l10n.overlayPermissionAction,
-              onPressed: overlay.value ?? false
-                  ? null
-                  : controller.requestOverlayPermission,
             ),
             const SizedBox(height: AppSpacing.md),
             _PermissionCard(

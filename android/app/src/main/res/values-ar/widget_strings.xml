@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_pomodoro_label">بومودورو ميرو</string>
+    <string name="widget_pomodoro_title">بومودورو</string>
+    <string name="widget_pomodoro_subtitle">اضغط للبدء</string>
+    <string name="widget_pomodoro_description">يفتح ميرو فوكس ويبدأ مؤقت البومودورو مباشرة</string>
+    <string name="widget_habits_label">عادات ميرو</string>
+    <string name="widget_habits_title">العادات</string>
+    <string name="widget_habits_subtitle">اضغط للفتح</string>
+    <string name="widget_habits_description">يفتح ميرو فوكس لتتبع عاداتك</string>
+</resources>

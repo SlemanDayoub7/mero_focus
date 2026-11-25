@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_pomodoro_label">Mero Pomodoro</string>
+    <string name="widget_pomodoro_title">Pomodoro</string>
+    <string name="widget_pomodoro_subtitle">Tap to start</string>
+    <string name="widget_pomodoro_description">Open Mero Focus and start the Pomodoro timer</string>
+    <string name="widget_habits_label">Mero Habits</string>
+    <string name="widget_habits_title">Habits</string>
+    <string name="widget_habits_subtitle">Tap to open</string>
+    <string name="widget_habits_description">Open Mero Focus to track your habits</string>
+</resources>

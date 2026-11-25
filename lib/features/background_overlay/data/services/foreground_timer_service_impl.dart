@@ -59,6 +59,18 @@ class ForegroundTimerServiceImpl implements ForegroundTimerService {
   }
 
   @override
+  Future<bool> update({
+    required String notificationTitle,
+    required String notificationText,
+  }) async {
+    final result = await FlutterForegroundTask.updateService(
+      notificationTitle: notificationTitle,
+      notificationText: notificationText,
+    );
+    return result is ServiceRequestSuccess;
+  }
+
+  @override
   Future<bool> stop() async {
     if (!await isRunning) return true;
     final result = await FlutterForegroundTask.stopService();

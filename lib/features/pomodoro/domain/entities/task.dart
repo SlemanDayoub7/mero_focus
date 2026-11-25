@@ -9,7 +9,7 @@ class Task {
     this.subjectId,
     this.priority = TaskPriority.medium,
     this.dueDate,
-    this.estimatedPomodoros = 1,
+    this.estimatedPomodoros = 0,
     this.done = false,
     this.completedAt,
   });

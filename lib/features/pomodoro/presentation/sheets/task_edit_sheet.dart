@@ -11,6 +11,7 @@ import '../../domain/entities/task_priority.dart';
 import '../constants/subject_palette.dart';
 import '../controllers/planner_actions.dart';
 import '../controllers/planner_providers.dart';
+import '../widgets/confirm_delete_dialog.dart';
 
 /// Full editor for a task: estimate, priority, due date, subject and delete.
 class TaskEditSheet extends ConsumerStatefulWidget {
@@ -47,9 +48,10 @@ class _TaskEditSheetState extends ConsumerState<TaskEditSheet> {
     );
   }
 
-  void _delete() {
+  Future<void> _delete() async {
     final id = _task.id;
     if (id == null) return;
+    if (!await confirmDelete(context, name: _task.title)) return;
     ref.read(activeTaskIdProvider.notifier).select(null);
     unawaited(
       ref
@@ -93,7 +95,7 @@ class _TaskEditSheetState extends ConsumerState<TaskEditSheet> {
               Expanded(child: Text(l10n.taskEstimatedPomodoros)),
               IconButton(
                 icon: const Icon(Icons.remove_circle_outline),
-                onPressed: _task.estimatedPomodoros > 1
+                onPressed: _task.estimatedPomodoros > 0
                     ? () => setState(
                           () => _task = _task.copyWith(
                             estimatedPomodoros: _task.estimatedPomodoros - 1,
@@ -101,7 +103,11 @@ class _TaskEditSheetState extends ConsumerState<TaskEditSheet> {
                         )
                     : null,
               ),
-              Text('${_task.estimatedPomodoros}'),
+              Text(
+                _task.estimatedPomodoros == 0
+                    ? l10n.taskEstimateNotSet
+                    : '${_task.estimatedPomodoros}',
+              ),
               IconButton(
                 icon: const Icon(Icons.add_circle_outline),
                 onPressed: () => setState(
@@ -185,7 +191,7 @@ class _TaskEditSheetState extends ConsumerState<TaskEditSheet> {
           Row(
             children: [
               TextButton.icon(
-                onPressed: _delete,
+                onPressed: () => unawaited(_delete()),
                 icon: const Icon(Icons.delete_outline),
                 label: Text(l10n.actionDelete),
               ),

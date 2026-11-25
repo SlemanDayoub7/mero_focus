@@ -27,4 +27,23 @@ class FocusSession {
   /// Snapshot of the subject/task name, kept even after those records are gone.
   final String label;
   final int? taskId;
+
+  /// Attaches the active task snapshot before persistence.
+  ///
+  /// Reports keep working after the task is deleted because the label is
+  /// copied into this immutable session.
+  FocusSession withAttribution({required String label, int? taskId}) {
+    return FocusSession(
+      id: id,
+      startTime: startTime,
+      endTime: endTime,
+      plannedDuration: plannedDuration,
+      actualDuration: actualDuration,
+      sessionType: sessionType,
+      completed: completed,
+      completionPercentage: completionPercentage,
+      label: label,
+      taskId: taskId,
+    );
+  }
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../../../core/extensions/context_extensions.dart';
@@ -8,9 +10,15 @@ import '../../domain/entities/subject.dart';
 import '../../domain/entities/task.dart';
 import '../../domain/entities/task_priority.dart';
 import '../constants/subject_palette.dart';
+import '../controllers/focus_totals.dart';
+import '../formatting/duration_labels.dart';
+import 'confirm_delete_dialog.dart';
 
-/// A planner task row. All mutations are forwarded as callbacks so the tile
-/// stays independent of Riverpod and can be reused by other surfaces.
+enum _TaskMenu { edit, toggleDone, delete }
+
+/// A planner task card. All mutations are forwarded as callbacks so the tile
+/// stays independent of Riverpod. Actions live in a three-dot menu (edit,
+/// mark done / reopen, delete with confirmation); there is no swipe.
 class TaskTile extends StatelessWidget {
   const TaskTile({
     super.key,
@@ -20,6 +28,7 @@ class TaskTile extends StatelessWidget {
     required this.onDelete,
     required this.onEdit,
     this.onStartFocus,
+    this.total = const FocusTotal(),
   });
 
   final Task task;
@@ -29,67 +38,120 @@ class TaskTile extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback? onStartFocus;
 
+  /// Time spent and completed sessions on this task.
+  final FocusTotal total;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final theme = Theme.of(context);
     final subject = _subjectFor(task.subjectId);
-    final subtitle = <String>[
+    final accent = subject == null
+        ? theme.colorScheme.outlineVariant
+        : SubjectPalette.fromHex(subject.colorHex);
+
+    final details = <String>[
       if (subject != null) subject.name,
-      l10n.taskPomodorosCount(task.estimatedPomodoros),
+      // Estimated sessions are shown only when the user set them.
+      if (task.estimatedPomodoros > 0)
+        l10n.taskEstimatedSessions(task.estimatedPomodoros),
       if (task.dueDate != null)
         '${task.dueDate!.year}/${task.dueDate!.month}/${task.dueDate!.day}',
     ].join(' • ');
+    final spent = l10n.taskSpentSummary(
+      total.time.label(l10n),
+      total.sessions,
+    );
 
-    return Dismissible(
-      key: ValueKey<String>(task.id?.toString() ?? task.title),
-      background: _DismissBackground(
-        color: context.colors.tertiaryContainer,
-        icon: Icons.check,
-        alignment: AlignmentDirectional.centerStart,
-      ),
-      secondaryBackground: _DismissBackground(
-        color: context.colors.errorContainer,
-        icon: Icons.delete_outline,
-        alignment: AlignmentDirectional.centerEnd,
-      ),
-      confirmDismiss: (direction) async {
-        if (direction == DismissDirection.startToEnd) {
-          onToggleDone();
-          return false;
-        }
-        return true;
-      },
-      onDismissed: (_) => onDelete(),
-      child: ListTile(
-        leading: Checkbox(value: task.done, onChanged: (_) => onToggleDone()),
-        title: AppText(
-          task.title,
-          variant: AppTextVariant.body,
-          color: task.done ? context.colors.onSurfaceVariant : null,
-        ),
-        subtitle: AppText(subtitle, variant: AppTextVariant.caption),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Tooltip(
-              message: _priorityLabel(task.priority, l10n),
-              child: Icon(
-                Icons.flag,
-                size: 18,
-                color: _priorityColor(task.priority, context),
-              ),
-            ),
-            if (onStartFocus != null)
-              IconButton(
-                tooltip: l10n.taskStartFocus,
-                icon: const Icon(Icons.play_circle_outline),
-                onPressed: onStartFocus,
-              ),
-          ],
-        ),
+    return Card(
+      elevation: 0,
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      color: theme.colorScheme.surfaceContainerLow,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
         onTap: onEdit,
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Color strip = the fixed task this belongs to.
+              Container(width: 5, color: accent),
+              Checkbox(
+                value: task.done,
+                onChanged: (_) => onToggleDone(),
+                shape: const CircleBorder(),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppText(
+                        task.title,
+                        variant: AppTextVariant.body,
+                        color: task.done ? context.colors.onSurfaceVariant : null,
+                      ),
+                      if (details.isNotEmpty)
+                        AppText(details, variant: AppTextVariant.caption),
+                      AppText(spent, variant: AppTextVariant.caption),
+                    ],
+                  ),
+                ),
+              ),
+              Tooltip(
+                message: _priorityLabel(task.priority, l10n),
+                child: Icon(
+                  Icons.flag,
+                  size: 18,
+                  color: _priorityColor(task.priority, context),
+                ),
+              ),
+              if (onStartFocus != null)
+                IconButton.filledTonal(
+                  tooltip: l10n.taskStartFocus,
+                  icon: const Icon(Icons.play_arrow),
+                  onPressed: onStartFocus,
+                ),
+              PopupMenuButton<_TaskMenu>(
+                tooltip: l10n.actionMore,
+                onSelected: (value) {
+                  switch (value) {
+                    case _TaskMenu.edit:
+                      onEdit();
+                    case _TaskMenu.toggleDone:
+                      onToggleDone();
+                    case _TaskMenu.delete:
+                      unawaited(_confirmAndDelete(context));
+                  }
+                },
+                itemBuilder: (_) => [
+                  PopupMenuItem(
+                    value: _TaskMenu.edit,
+                    child: Text(l10n.actionEdit),
+                  ),
+                  PopupMenuItem(
+                    value: _TaskMenu.toggleDone,
+                    child: Text(
+                      task.done ? l10n.actionReopen : l10n.actionMarkDone,
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: _TaskMenu.delete,
+                    child: Text(l10n.actionDelete),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
+  }
+
+  Future<void> _confirmAndDelete(BuildContext context) async {
+    if (await confirmDelete(context, name: task.title)) onDelete();
   }
 
   Subject? _subjectFor(int? id) {
@@ -113,28 +175,6 @@ class TaskTile extends StatelessWidget {
       TaskPriority.medium => l10n.taskPriorityMedium,
       TaskPriority.low => l10n.taskPriorityLow,
     };
-  }
-}
-
-class _DismissBackground extends StatelessWidget {
-  const _DismissBackground({
-    required this.color,
-    required this.icon,
-    required this.alignment,
-  });
-
-  final Color color;
-  final IconData icon;
-  final AlignmentDirectional alignment;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: color,
-      alignment: alignment,
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Icon(icon, color: context.colors.onSurfaceVariant),
-    );
   }
 }
 

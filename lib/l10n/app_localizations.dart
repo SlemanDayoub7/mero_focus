@@ -212,6 +212,36 @@ abstract class AppLocalizations {
   /// **'Reset'**
   String get timerReset;
 
+  /// No description provided for @timerStop.
+  ///
+  /// In en, this message translates to:
+  /// **'End'**
+  String get timerStop;
+
+  /// No description provided for @timerStartBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Start break'**
+  String get timerStartBreak;
+
+  /// No description provided for @timerSkipBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip break'**
+  String get timerSkipBreak;
+
+  /// No description provided for @timerSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Timer settings'**
+  String get timerSettings;
+
+  /// No description provided for @timerLongBreakEvery.
+  ///
+  /// In en, this message translates to:
+  /// **'Long break after (rounds)'**
+  String get timerLongBreakEvery;
+
   /// No description provided for @timerRound.
   ///
   /// In en, this message translates to:
@@ -251,13 +281,13 @@ abstract class AppLocalizations {
   /// No description provided for @overlayPermissionTitle.
   ///
   /// In en, this message translates to:
-  /// **'Floating timer'**
+  /// **'Floating timer (optional)'**
   String get overlayPermissionTitle;
 
   /// No description provided for @overlayPermissionBody.
   ///
   /// In en, this message translates to:
-  /// **'Allow Mero Focus to draw over other apps so a small timer stays visible when you switch apps.'**
+  /// **'Shows a small timer over other apps when you leave Mero Focus. Off by default: the notification already shows the live time. Turning it on asks for the \"draw over other apps\" permission.'**
   String get overlayPermissionBody;
 
   /// No description provided for @overlayPermissionAction.
@@ -377,7 +407,7 @@ abstract class AppLocalizations {
   /// No description provided for @tasksSortProject.
   ///
   /// In en, this message translates to:
-  /// **'By subject'**
+  /// **'By fixed task'**
   String get tasksSortProject;
 
   /// No description provided for @tasksSortDueDate.
@@ -407,25 +437,31 @@ abstract class AppLocalizations {
   /// No description provided for @subjects.
   ///
   /// In en, this message translates to:
-  /// **'Subjects'**
+  /// **'Fixed tasks'**
   String get subjects;
 
   /// No description provided for @subjectsNew.
   ///
   /// In en, this message translates to:
-  /// **'New subject'**
+  /// **'New fixed task'**
   String get subjectsNew;
+
+  /// No description provided for @subjectsEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit fixed task'**
+  String get subjectsEdit;
 
   /// No description provided for @subjectsNameHint.
   ///
   /// In en, this message translates to:
-  /// **'Subject name'**
+  /// **'Fixed task name (e.g. Maintenance)'**
   String get subjectsNameHint;
 
   /// No description provided for @subjectsEmpty.
   ///
   /// In en, this message translates to:
-  /// **'Add your subjects to pick them later'**
+  /// **'Add the fixed tasks you work on all year'**
   String get subjectsEmpty;
 
   /// No description provided for @actionCancel.
@@ -473,7 +509,7 @@ abstract class AppLocalizations {
   /// No description provided for @taskEstimatedPomodoros.
   ///
   /// In en, this message translates to:
-  /// **'Estimated pomodoros'**
+  /// **'Estimated sessions (optional)'**
   String get taskEstimatedPomodoros;
 
   /// No description provided for @taskPomodorosCount.
@@ -673,6 +709,534 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{hours} h {minutes} min'**
   String durationHoursMinutes(int hours, int minutes);
+
+  /// No description provided for @taskEstimateNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get taskEstimateNotSet;
+
+  /// No description provided for @taskEstimatedSessions.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated sessions: {count}'**
+  String taskEstimatedSessions(int count);
+
+  /// No description provided for @taskSpentSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Time spent: {time} • Sessions: {count}'**
+  String taskSpentSummary(String time, int count);
+
+  /// No description provided for @subjectSessionsDone.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} sessions done'**
+  String subjectSessionsDone(int count);
+
+  /// No description provided for @timerFullscreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Full screen'**
+  String get timerFullscreen;
+
+  /// No description provided for @timerExitFullscreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit full screen'**
+  String get timerExitFullscreen;
+
+  /// No description provided for @settingsSoundSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Sounds'**
+  String get settingsSoundSection;
+
+  /// No description provided for @soundNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No sound'**
+  String get soundNone;
+
+  /// No description provided for @soundWhite.
+  ///
+  /// In en, this message translates to:
+  /// **'White noise'**
+  String get soundWhite;
+
+  /// No description provided for @soundPink.
+  ///
+  /// In en, this message translates to:
+  /// **'Pink noise'**
+  String get soundPink;
+
+  /// No description provided for @soundBrown.
+  ///
+  /// In en, this message translates to:
+  /// **'Brown noise'**
+  String get soundBrown;
+
+  /// No description provided for @soundEndTimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Sound at the end of the timer'**
+  String get soundEndTimer;
+
+  /// No description provided for @settingsBackgroundSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Background image'**
+  String get settingsBackgroundSection;
+
+  /// No description provided for @backgroundPick.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from gallery'**
+  String get backgroundPick;
+
+  /// No description provided for @backgroundRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove image'**
+  String get backgroundRemove;
+
+  /// No description provided for @backgroundTimerOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Timer only'**
+  String get backgroundTimerOnly;
+
+  /// No description provided for @backgroundTimerAndTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Timer and tasks'**
+  String get backgroundTimerAndTasks;
+
+  /// No description provided for @reportDailyGoalEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily goal'**
+  String get reportDailyGoalEdit;
+
+  /// No description provided for @reportStreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Day streak'**
+  String get reportStreak;
+
+  /// No description provided for @examDaysLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} days left'**
+  String examDaysLeft(int count);
+
+  /// No description provided for @examToday.
+  ///
+  /// In en, this message translates to:
+  /// **'The exam is today'**
+  String get examToday;
+
+  /// No description provided for @examPassed.
+  ///
+  /// In en, this message translates to:
+  /// **'The exam date has passed'**
+  String get examPassed;
+
+  /// No description provided for @examEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit exam goal'**
+  String get examEdit;
+
+  /// No description provided for @examRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get examRemove;
+
+  /// No description provided for @examPlanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick study plan'**
+  String get examPlanTitle;
+
+  /// No description provided for @examPlanIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'If you study this much every day until the exam:'**
+  String get examPlanIntro;
+
+  /// No description provided for @examPlanPerDay.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} hours a day'**
+  String examPlanPerDay(int hours);
+
+  /// No description provided for @examPlanTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'You will have studied {total} hours by the exam'**
+  String examPlanTotal(int total);
+
+  /// No description provided for @examPlanNoDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a future exam date to see a plan.'**
+  String get examPlanNoDays;
+
+  /// No description provided for @examPlanMotivation.
+  ///
+  /// In en, this message translates to:
+  /// **'Study, focus and stay consistent — every session brings you closer to your goal.'**
+  String get examPlanMotivation;
+
+  /// No description provided for @goalsAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a goal'**
+  String get goalsAdd;
+
+  /// No description provided for @goalNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal name'**
+  String get goalNameLabel;
+
+  /// No description provided for @goalNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Physics exam, learn English'**
+  String get goalNameHint;
+
+  /// No description provided for @goalDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'End date (optional)'**
+  String get goalDateLabel;
+
+  /// No description provided for @goalNoDate.
+  ///
+  /// In en, this message translates to:
+  /// **'No end date'**
+  String get goalNoDate;
+
+  /// No description provided for @reportExportPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Export / share PDF'**
+  String get reportExportPdf;
+
+  /// No description provided for @reportExportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not create the PDF'**
+  String get reportExportFailed;
+
+  /// No description provided for @reportPdfTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus report'**
+  String get reportPdfTitle;
+
+  /// No description provided for @reportPdfGenerated.
+  ///
+  /// In en, this message translates to:
+  /// **'Created on {date}'**
+  String reportPdfGenerated(String date);
+
+  /// No description provided for @reportPeak.
+  ///
+  /// In en, this message translates to:
+  /// **'Peak: {value}'**
+  String reportPeak(String value);
+
+  /// No description provided for @reportBySubject.
+  ///
+  /// In en, this message translates to:
+  /// **'Time by fixed task'**
+  String get reportBySubject;
+
+  /// No description provided for @confirmDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete?'**
+  String get confirmDeleteTitle;
+
+  /// No description provided for @confirmDeleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{name}\"? This cannot be undone.'**
+  String confirmDeleteBody(String name);
+
+  /// No description provided for @actionEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get actionEdit;
+
+  /// No description provided for @actionMarkDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as done'**
+  String get actionMarkDone;
+
+  /// No description provided for @actionMore.
+  ///
+  /// In en, this message translates to:
+  /// **'More options'**
+  String get actionMore;
+
+  /// No description provided for @subtasksManage.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtasks'**
+  String get subtasksManage;
+
+  /// No description provided for @subtaskRename.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get subtaskRename;
+
+  /// No description provided for @subtaskNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtask name'**
+  String get subtaskNameHint;
+
+  /// No description provided for @subtaskAddHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a subtask (optional)...'**
+  String get subtaskAddHint;
+
+  /// No description provided for @subtaskGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'General (no subtask)'**
+  String get subtaskGeneral;
+
+  /// No description provided for @subtaskTotalAllTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Total time, all time'**
+  String get subtaskTotalAllTime;
+
+  /// No description provided for @reminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders'**
+  String get reminders;
+
+  /// No description provided for @remindersEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No reminders yet. Add one so you never skip studying.'**
+  String get remindersEmpty;
+
+  /// No description provided for @reminderAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add reminder'**
+  String get reminderAdd;
+
+  /// No description provided for @reminderEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit reminder'**
+  String get reminderEdit;
+
+  /// No description provided for @reminderTitleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'What do you need to do?'**
+  String get reminderTitleLabel;
+
+  /// No description provided for @reminderTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Revise chapter 3'**
+  String get reminderTitleHint;
+
+  /// No description provided for @reminderDefaultTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Time to study'**
+  String get reminderDefaultTitle;
+
+  /// No description provided for @reminderTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get reminderTime;
+
+  /// No description provided for @reminderRepeatDaily.
+  ///
+  /// In en, this message translates to:
+  /// **'Every day'**
+  String get reminderRepeatDaily;
+
+  /// No description provided for @reminderRepeatDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Some days'**
+  String get reminderRepeatDays;
+
+  /// No description provided for @reminderRepeatOnce.
+  ///
+  /// In en, this message translates to:
+  /// **'Once'**
+  String get reminderRepeatOnce;
+
+  /// No description provided for @reminderEveryDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Every day'**
+  String get reminderEveryDay;
+
+  /// No description provided for @reminderOnceOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Once on {date}'**
+  String reminderOnceOn(String date);
+
+  /// No description provided for @reminderDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get reminderDate;
+
+  /// No description provided for @reminderLinkedTask.
+  ///
+  /// In en, this message translates to:
+  /// **'Linked fixed task (optional)'**
+  String get reminderLinkedTask;
+
+  /// No description provided for @reminderNoLink.
+  ///
+  /// In en, this message translates to:
+  /// **'None (start a general session)'**
+  String get reminderNoLink;
+
+  /// No description provided for @reminderBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to start your Pomodoro'**
+  String get reminderBody;
+
+  /// No description provided for @reminderSuggestedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestions'**
+  String get reminderSuggestedTitle;
+
+  /// No description provided for @reminderSuggestMorning.
+  ///
+  /// In en, this message translates to:
+  /// **'Morning study session'**
+  String get reminderSuggestMorning;
+
+  /// No description provided for @reminderSuggestEvening.
+  ///
+  /// In en, this message translates to:
+  /// **'Evening review'**
+  String get reminderSuggestEvening;
+
+  /// No description provided for @reminderSuggestPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan tomorrow\'s tasks'**
+  String get reminderSuggestPlan;
+
+  /// No description provided for @reminderSmartSwitch.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart reminder'**
+  String get reminderSmartSwitch;
+
+  /// No description provided for @reminderSmartSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminds you only on days you haven\'t studied yet'**
+  String get reminderSmartSubtitle;
+
+  /// No description provided for @reminderSmartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep your streak going'**
+  String get reminderSmartTitle;
+
+  /// No description provided for @reminderSmartBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t studied today — start a session now.'**
+  String get reminderSmartBody;
+
+  /// No description provided for @reminderNotificationsOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are off, so reminders cannot reach you.'**
+  String get reminderNotificationsOff;
+
+  /// No description provided for @reminderAllow.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow'**
+  String get reminderAllow;
+
+  /// No description provided for @reminderChannelName.
+  ///
+  /// In en, this message translates to:
+  /// **'Study reminders'**
+  String get reminderChannelName;
+
+  /// No description provided for @reminderChannelDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders to start studying'**
+  String get reminderChannelDescription;
+
+  /// No description provided for @weekday1.
+  ///
+  /// In en, this message translates to:
+  /// **'Mon'**
+  String get weekday1;
+
+  /// No description provided for @weekday2.
+  ///
+  /// In en, this message translates to:
+  /// **'Tue'**
+  String get weekday2;
+
+  /// No description provided for @weekday3.
+  ///
+  /// In en, this message translates to:
+  /// **'Wed'**
+  String get weekday3;
+
+  /// No description provided for @weekday4.
+  ///
+  /// In en, this message translates to:
+  /// **'Thu'**
+  String get weekday4;
+
+  /// No description provided for @weekday5.
+  ///
+  /// In en, this message translates to:
+  /// **'Fri'**
+  String get weekday5;
+
+  /// No description provided for @weekday6.
+  ///
+  /// In en, this message translates to:
+  /// **'Sat'**
+  String get weekday6;
+
+  /// No description provided for @weekday7.
+  ///
+  /// In en, this message translates to:
+  /// **'Sun'**
+  String get weekday7;
 }
 
 class _AppLocalizationsDelegate

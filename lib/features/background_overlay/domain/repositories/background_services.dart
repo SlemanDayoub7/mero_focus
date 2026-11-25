@@ -9,6 +9,12 @@ abstract class ForegroundTimerService {
     required String notificationText,
   });
 
+  /// Refreshes the ongoing notification (used to show the live time).
+  Future<bool> update({
+    required String notificationTitle,
+    required String notificationText,
+  });
+
   Future<bool> stop();
 
   Future<bool> get isRunning;
@@ -26,6 +32,7 @@ abstract class FloatingOverlayService {
     required OverlayTimerData data,
   });
 
+  /// Returns false when the overlay is no longer on screen.
   Future<bool> update(OverlayTimerData data);
 
   Future<bool> close();
