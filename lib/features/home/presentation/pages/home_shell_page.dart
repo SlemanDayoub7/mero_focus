@@ -8,7 +8,6 @@ import '../../../capture/presentation/pages/placeholder_capture_page.dart';
 import '../../../pomodoro/presentation/pages/pomodoro_timer_page.dart';
 import '../../../pomodoro/presentation/pages/tasks_page.dart';
 import '../../../pomodoro/presentation/widgets/app_background.dart';
-import '../../../review/presentation/pages/placeholder_review_page.dart';
 import '../../../settings/presentation/pages/settings_page.dart';
 
 class HomeShellPage extends StatefulWidget {

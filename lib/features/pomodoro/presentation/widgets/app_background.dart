@@ -52,7 +52,7 @@ class AppBackground extends ConsumerWidget {
       fit: StackFit.expand,
       children: [
         image,
-        Container(color: Colors.black.withOpacity(0.6)),
+        Container(color: Colors.black.withAlpha((255 * 0.6).round())),
         Material(type: MaterialType.transparency, child: child),
       ],
     );

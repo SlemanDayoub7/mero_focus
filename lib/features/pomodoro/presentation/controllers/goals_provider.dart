@@ -37,8 +37,7 @@ class GoalsNotifier extends Notifier<List<StudyGoal>> {
         final decoded = jsonDecode(raw);
         if (decoded is List) {
           state = <StudyGoal>[
-            for (final item in decoded)
-              if (StudyGoal.fromJson(item) case final goal?) goal,
+            for (final item in decoded) ?StudyGoal.fromJson(item),
           ];
         }
         return;

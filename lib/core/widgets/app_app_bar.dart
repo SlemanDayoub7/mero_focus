@@ -21,7 +21,9 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       title: Text(title, style: Theme.of(context).textTheme.titleLarge),
-      backgroundColor: Colors.black.withOpacity(transparentDegree),
+      backgroundColor: Colors.black.withAlpha(
+        (255 * transparentDegree).round(),
+      ),
       foregroundColor: AppColors.glassInk,
       surfaceTintColor: Colors.transparent,
       elevation: 0,

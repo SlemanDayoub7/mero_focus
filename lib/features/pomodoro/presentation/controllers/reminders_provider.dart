@@ -37,8 +37,7 @@ class RemindersNotifier extends Notifier<List<Reminder>> {
       final decoded = jsonDecode(raw);
       if (decoded is List) {
         state = <Reminder>[
-          for (final item in decoded)
-            if (Reminder.fromJson(item) case final reminder?) reminder,
+          for (final item in decoded) ?Reminder.fromJson(item),
         ];
       }
     } catch (_) {}

@@ -1,10 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mero_focus/features/pomodoro/domain/entities/subtask.dart';
 
 import '../../domain/entities/focus_session.dart';
 import '../../domain/entities/session_type.dart';
 import '../../domain/entities/subject.dart';
 import '../../domain/entities/task.dart';
-import '../../domain/entities/subtask.dart';
+
 import 'planner_providers.dart';
 import 'subtasks_provider.dart';
 

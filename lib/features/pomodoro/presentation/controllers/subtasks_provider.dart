@@ -44,10 +44,7 @@ class SubtasksNotifier extends Notifier<List<Subtask>> {
       if (raw == null) return;
       final decoded = jsonDecode(raw);
       if (decoded is List) {
-        state = <Subtask>[
-          for (final item in decoded)
-            if (Subtask.fromJson(item) case final subtask?) subtask,
-        ];
+        state = <Subtask>[for (final item in decoded) ?Subtask.fromJson(item)];
       }
     } catch (_) {}
   }
@@ -83,7 +80,8 @@ class SubtasksNotifier extends Notifier<List<Subtask>> {
     final name = rawName.trim();
     if (name.isEmpty) return;
     state = <Subtask>[
-      for (final item in state) item.id == id ? item.copyWith(name: name) : item,
+      for (final item in state)
+        item.id == id ? item.copyWith(name: name) : item,
     ];
     await _persist();
   }
@@ -125,8 +123,7 @@ class SubtaskLogNotifier extends Notifier<List<SubtaskLogEntry>> {
       final decoded = jsonDecode(raw);
       if (decoded is List) {
         state = <SubtaskLogEntry>[
-          for (final item in decoded)
-            if (SubtaskLogEntry.fromJson(item) case final entry?) entry,
+          for (final item in decoded) ?SubtaskLogEntry.fromJson(item),
         ];
       }
     } catch (_) {}
