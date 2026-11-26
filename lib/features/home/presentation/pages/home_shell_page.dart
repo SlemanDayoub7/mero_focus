@@ -4,7 +4,7 @@ import 'package:mero_focus/features/pomodoro/presentation/pages/reports_page.dar
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/l10n/l10n_context.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../capture/presentation/pages/placeholder_capture_page.dart';
+import '../../../focus_scenes/presentation/pages/focus_scenes_page.dart';
 import '../../../pomodoro/presentation/pages/pomodoro_timer_page.dart';
 import '../../../pomodoro/presentation/pages/tasks_page.dart';
 import '../../../pomodoro/presentation/widgets/app_background.dart';
@@ -25,19 +25,16 @@ class _HomeShellPageState extends State<HomeShellPage> {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final isArabic = context.l10n.localeName.startsWith('ar');
     final pages = <Widget>[
       const PomodoroTimerPage(),
       const TasksPage(),
       const ReportsPage(),
-      // PlaceholderReviewPage(onGoToTimer: () => _select(0)),
-      PlaceholderCapturePage(onGoToTasks: () => _select(1)),
-      // The shell owns the bottom inset; a nested AppScaffold must not add it
-      // again.
+      const FocusScenesPage(),
       const SettingsPage(applySafeArea: false),
     ];
 
     return Scaffold(
-      // Only the five main tabs get the image; pushed routes stay plain.
       body: AppBackground(
         child: IndexedStack(index: _currentIndex, children: pages),
       ),
@@ -70,9 +67,9 @@ class _HomeShellPageState extends State<HomeShellPage> {
             label: context.l10n.reports,
           ),
           NavigationDestination(
-            icon: const Icon(Icons.edit_note_outlined),
-            selectedIcon: const Icon(Icons.edit_note),
-            label: context.l10n.addEntry,
+            icon: const Icon(Icons.auto_awesome_outlined),
+            selectedIcon: const Icon(Icons.auto_awesome),
+            label: isArabic ? 'هوياتي' : 'Identities',
           ),
           NavigationDestination(
             icon: const Icon(Icons.settings_outlined),
