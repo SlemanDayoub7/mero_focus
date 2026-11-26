@@ -16,6 +16,7 @@ import '../../../pomodoro/data/services/audio_white_noise.dart';
 import '../../../pomodoro/presentation/controllers/planner_actions.dart';
 import '../../../pomodoro/presentation/controllers/planner_providers.dart';
 import '../../../pomodoro/presentation/controllers/timer_extras_settings.dart';
+import '../../../pomodoro/presentation/pages/focus_scenes_page.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key, this.applySafeArea = true});
@@ -133,6 +134,18 @@ class SettingsPage extends ConsumerWidget {
                   ),
                 ),
               ],
+            ),
+          ),
+          Divider(height: AppSpacing.lg, color: colors.outlineVariant),
+
+          _ChooserTile(
+            icon: Icons.auto_awesome_outlined,
+            label: 'Focus Scenes',
+            value: 'Create and save your own focus scenes',
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const FocusScenesPage(),
+              ),
             ),
           ),
           Divider(height: AppSpacing.lg, color: colors.outlineVariant),

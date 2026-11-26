@@ -13,6 +13,7 @@ import '../../domain/entities/planner_preferences.dart';
 import '../../domain/entities/session_type.dart';
 import '../../domain/entities/timer_snapshot.dart';
 import '../controllers/planner_providers.dart';
+import '../controllers/focus_scenes.dart';
 import '../controllers/pomodoro_timer_controller.dart';
 import '../controllers/subtasks_provider.dart';
 import '../controllers/timer_actions.dart';
@@ -60,6 +61,7 @@ class PomodoroTimerPage extends ConsumerWidget {
     final controller = ref.read(pomodoroTimerProvider.notifier);
     final activeTask = ref.watch(activeTaskProvider);
     final activeSubtask = ref.watch(activeSubtaskProvider);
+    final activeScene = ref.watch(focusScenesProvider).activeScene;
     final prefsAsync = ref.watch(plannerPreferencesProvider);
     final prefs = prefsAsync is AsyncData<PlannerPreferences>
         ? prefsAsync.value
@@ -116,6 +118,30 @@ class PomodoroTimerPage extends ConsumerWidget {
                       ),
                     ),
                   ),
+                  const SizedBox(height: AppSpacing.md),
+                ],
+                if (activeScene != null) ...[
+                  Text(
+                    activeScene.title,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: activeScene.accentColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  if (activeScene.quote.isNotEmpty) ...[
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      activeScene.quote,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.white.withValues(alpha: .88),
+                        fontStyle: FontStyle.italic,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                   const SizedBox(height: AppSpacing.md),
                 ],
                 PhaseIndicator(
