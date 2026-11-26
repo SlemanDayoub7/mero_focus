@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -50,13 +51,45 @@ Future<void> exportReportPdf(
   final isRtl = Directionality.of(context) == TextDirection.rtl;
   final weekdays = MaterialLocalizations.of(context).narrowWeekdays;
 
+  void showFailure() {
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(l10n.reportExportFailed),
+        action: SnackBarAction(
+          label: l10n.actionRetry,
+          onPressed: () {
+            if (context.mounted) {
+              unawaited(exportReportPdf(context, ref, range));
+            }
+          },
+        ),
+      ),
+    );
+  }
+
   final sessionsAsync = ref.read(focusSessionsProvider);
   final prefsAsync = ref.read(plannerPreferencesProvider);
   if (sessionsAsync is! AsyncData<List<FocusSession>> ||
       prefsAsync is! AsyncData<PlannerPreferences>) {
-    messenger.showSnackBar(SnackBar(content: Text(l10n.reportExportFailed)));
+    showFailure();
     return;
   }
+
+  final loading = SnackBar(
+    content: Row(
+      children: [
+        const SizedBox(
+          width: 20,
+          height: 20,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
+        const SizedBox(width: 12),
+        Expanded(child: Text(l10n.statusLoading)),
+      ],
+    ),
+    duration: const Duration(days: 1),
+  );
+  messenger.showSnackBar(loading);
 
   ui.Image? background;
   try {
@@ -168,8 +201,9 @@ Future<void> exportReportPdf(
     final Uint8List bytes = await document.save();
 
     await Printing.sharePdf(bytes: bytes, filename: 'mero_focus_report.pdf');
+    messenger.clearSnackBars();
   } catch (_) {
-    messenger.showSnackBar(SnackBar(content: Text(l10n.reportExportFailed)));
+    showFailure();
   } finally {
     background?.dispose();
   }

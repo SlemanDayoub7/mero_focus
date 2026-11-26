@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/l10n/l10n_context.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_text.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/subject.dart';
@@ -58,15 +59,12 @@ class TaskTile extends StatelessWidget {
       if (task.dueDate != null)
         '${task.dueDate!.year}/${task.dueDate!.month}/${task.dueDate!.day}',
     ].join(' • ');
-    final spent = l10n.taskSpentSummary(
-      total.time.label(l10n),
-      total.sessions,
-    );
+    final spent = l10n.taskSpentSummary(total.time.label(l10n), total.sessions);
 
     return Card(
       elevation: 0,
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      color: theme.colorScheme.surfaceContainerLow,
+      color: AppColors.glassSurface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -91,7 +89,9 @@ class TaskTile extends StatelessWidget {
                       AppText(
                         task.title,
                         variant: AppTextVariant.body,
-                        color: task.done ? context.colors.onSurfaceVariant : null,
+                        color: task.done
+                            ? context.colors.onSurfaceVariant
+                            : null,
                       ),
                       if (details.isNotEmpty)
                         AppText(details, variant: AppTextVariant.caption),
@@ -109,7 +109,7 @@ class TaskTile extends StatelessWidget {
                 ),
               ),
               if (onStartFocus != null)
-                IconButton.filledTonal(
+                IconButton(
                   tooltip: l10n.taskStartFocus,
                   icon: const Icon(Icons.play_arrow),
                   onPressed: onStartFocus,

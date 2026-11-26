@@ -1,40 +1,45 @@
 import 'package:flutter/material.dart';
-import '../extensions/context_extensions.dart';
-import '../theme/app_spacing.dart';
-import '../theme/app_typography.dart';
 
+import '../theme/app_spacing.dart';
+
+/// Primary/secondary action button with a 48 dp tap target and accessible ink.
 class AppButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
   final bool isSecondary;
+  final IconData? icon;
 
   const AppButton({
     super.key,
     required this.label,
     required this.onPressed,
     this.isSecondary = false,
+    this.icon,
   });
 
   @override
   Widget build(BuildContext context) {
-    final bg = isSecondary ? context.colors.secondary : context.colors.primary;
-    final fg = isSecondary
-        ? context.colors.onSecondary
-        : context.colors.onPrimary;
-    return FilledButton(
-      onPressed: onPressed,
-      style: FilledButton.styleFrom(
-        backgroundColor: bg,
-        foregroundColor: fg,
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg,
-          vertical: AppSpacing.sm,
+    final child = icon == null
+        ? Text(label)
+        : Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 20),
+              const SizedBox(width: AppSpacing.sm),
+              Text(label),
+            ],
+          );
+
+    if (isSecondary) {
+      return OutlinedButton(
+        onPressed: onPressed,
+        style: OutlinedButton.styleFrom(
+          minimumSize: const Size(72, AppSpacing.controlHeight),
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        ),
-      ),
-      child: Text(label, style: AppTypography.body.copyWith(color: fg)),
-    );
+        child: child,
+      );
+    }
+
+    return FilledButton(onPressed: onPressed, child: child);
   }
 }

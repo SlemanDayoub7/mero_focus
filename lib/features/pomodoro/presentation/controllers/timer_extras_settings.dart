@@ -9,6 +9,71 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Where the user's background image is shown.
 enum BackgroundScope { timerOnly, timerAndTasks }
 
+/// A bundled, ready-made background. `id` is stored in preferences with the
+/// `asset:` prefix so it can be told apart from a picked gallery file path.
+class BuiltInBackground {
+  const BuiltInBackground(this.id, this.asset, this.labelKey);
+
+  final String id;
+  final String asset;
+  final String labelKey;
+
+  String get storedPath => 'asset:$id';
+
+  /// Applied on first run so every main screen always has a background.
+  static const String defaultStoredPath = 'asset:dawn';
+
+  static const List<BuiltInBackground> all = <BuiltInBackground>[
+    BuiltInBackground(
+      'dawn',
+      'assets/images/backgrounds/dawn-mist.jpg',
+      'dawn',
+    ),
+    BuiltInBackground(
+      'ocean',
+      'assets/images/backgrounds/ocean-calm.jpg',
+      'ocean',
+    ),
+    BuiltInBackground(
+      'forest',
+      'assets/images/backgrounds/forest-shadow.jpg',
+      'forest',
+    ),
+    BuiltInBackground(
+      'rose',
+      'assets/images/backgrounds/rose-quartz.jpg',
+      'rose',
+    ),
+    BuiltInBackground(
+      'slate',
+      'assets/images/backgrounds/slate-sky.jpg',
+      'slate',
+    ),
+    BuiltInBackground(
+      'sand',
+      'assets/images/backgrounds/sand-dune.jpg',
+      'sand',
+    ),
+    BuiltInBackground(
+      'aurora',
+      'assets/images/backgrounds/aurora.jpg',
+      'aurora',
+    ),
+    BuiltInBackground(
+      'nebula',
+      'assets/images/backgrounds/nebula.jpg',
+      'nebula',
+    ),
+  ];
+
+  static BuiltInBackground? fromId(String? id) {
+    for (final background in all) {
+      if (background.id == id) return background;
+    }
+    return null;
+  }
+}
+
 /// Look-and-sound options that live outside the database preferences:
 /// background image, where it applies, and the end-of-timer sound switch.
 class TimerExtras {
@@ -18,9 +83,16 @@ class TimerExtras {
     this.endSoundEnabled = true,
   });
 
+  /// Either a picked file path or a bundled `asset:<id>` reference.
   final String? backgroundPath;
   final BackgroundScope scope;
   final bool endSoundEnabled;
+
+  String? get backgroundAssetId {
+    final path = backgroundPath;
+    if (path == null || !path.startsWith('asset:')) return null;
+    return path.substring('asset:'.length);
+  }
 
   TimerExtras copyWith({
     String? backgroundPath,
@@ -54,7 +126,9 @@ class TimerExtrasNotifier extends Notifier<TimerExtras> {
     _disposed = false;
     ref.onDispose(() => _disposed = true);
     unawaited(_load());
-    return const TimerExtras();
+    return const TimerExtras(
+      backgroundPath: BuiltInBackground.defaultStoredPath,
+    );
   }
 
   Future<void> _load() async {
@@ -63,8 +137,19 @@ class TimerExtrasNotifier extends Notifier<TimerExtras> {
       if (_disposed) return;
       final path = prefs.getString(_pathKey);
       final scopeName = prefs.getString(_scopeKey);
+      final usablePath = switch (path) {
+        null => BuiltInBackground.defaultStoredPath,
+        final String value when value.startsWith('asset:') =>
+          BuiltInBackground.fromId(value.substring('asset:'.length)) != null
+              ? value
+              : BuiltInBackground.defaultStoredPath,
+        final String value =>
+          File(value).existsSync()
+              ? value
+              : BuiltInBackground.defaultStoredPath,
+      };
       state = TimerExtras(
-        backgroundPath: (path != null && File(path).existsSync()) ? path : null,
+        backgroundPath: usablePath,
         scope: scopeName == BackgroundScope.timerOnly.name
             ? BackgroundScope.timerOnly
             : BackgroundScope.timerAndTasks,
@@ -94,15 +179,30 @@ class TimerExtrasNotifier extends Notifier<TimerExtras> {
     if (!_disposed) state = state.copyWith(backgroundPath: target);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_pathKey, target);
-    if (old != null) await _deleteQuietly(old);
+    if (old != null && !old.startsWith('asset:')) await _deleteQuietly(old);
   }
 
+  Future<void> selectBuiltIn(BuiltInBackground background) async {
+    final old = state.backgroundPath;
+    if (!_disposed) {
+      state = state.copyWith(backgroundPath: background.storedPath);
+    }
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_pathKey, background.storedPath);
+    if (old != null && !old.startsWith('asset:')) await _deleteQuietly(old);
+  }
+
+  /// Resets to the default bundled background; a screen is never left bare.
   Future<void> clearBackground() async {
     final old = state.backgroundPath;
-    if (!_disposed) state = state.copyWith(clearBackground: true);
+    if (!_disposed) {
+      state = state.copyWith(
+        backgroundPath: BuiltInBackground.defaultStoredPath,
+      );
+    }
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_pathKey);
-    if (old != null) await _deleteQuietly(old);
+    await prefs.setString(_pathKey, BuiltInBackground.defaultStoredPath);
+    if (old != null && !old.startsWith('asset:')) await _deleteQuietly(old);
   }
 
   Future<void> setScope(BackgroundScope scope) async {

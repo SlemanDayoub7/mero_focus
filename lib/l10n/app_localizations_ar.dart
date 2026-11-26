@@ -149,6 +149,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get tasksRemainingCount => 'المهام المتبقية';
 
   @override
+  String get tasksRemainingTime => 'الوقت المتبقي';
+
+  @override
+  String get tasksToDoCount => 'المهام التي يجب القيام بها';
+
+  @override
   String get tasksElapsedTime => 'الوقت المنقضي';
 
   @override
@@ -367,6 +373,21 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get soundBrown => 'ضوضاء بنية';
+
+  @override
+  String get soundRain => 'مطر';
+
+  @override
+  String get soundSea => 'بحر';
+
+  @override
+  String get soundForest => 'غابة';
+
+  @override
+  String get soundBirds => 'طيور';
+
+  @override
+  String get soundCafe => 'مقهى';
 
   @override
   String get soundEndTimer => 'صوت عند نهاية المؤقت';
@@ -616,4 +637,120 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get weekday7 => 'الأحد';
+
+  @override
+  String get actionRetry => 'حاول مرة أخرى';
+
+  @override
+  String get statusLoading => 'جارٍ التحميل…';
+
+  @override
+  String get statusSaving => 'جارٍ الحفظ…';
+
+  @override
+  String get statusOffline => 'لا يوجد اتصال. عملك محفوظ على هذا الجهاز.';
+
+  @override
+  String get errorGeneric => 'حدث خطأ. حاول مرة أخرى.';
+
+  @override
+  String get errorLoadFailed => 'تعذّر تحميل هذه الشاشة.';
+
+  @override
+  String get comingSoonTitle => 'قريبًا';
+
+  @override
+  String get comingSoonBody =>
+      'هذا القسم قيد الإنشاء. المؤقت والمهام جاهزة للاستخدام الآن.';
+
+  @override
+  String get focusPrimaryHint =>
+      'ابدأ عندما تكون جاهزًا. سيستمر المؤقت في الخلفية.';
+
+  @override
+  String get accentSection => 'اللون الأساسي';
+
+  @override
+  String get accentHint => 'يُستخدم للأزرار والتقدّم والعناصر المحددة.';
+
+  @override
+  String get accentRoyal => 'أزرق ملكي';
+
+  @override
+  String get accentViolet => 'بنفسجي';
+
+  @override
+  String get accentCrimson => 'أحمر قاني';
+
+  @override
+  String get accentAmber => 'كهرماني';
+
+  @override
+  String get accentEmerald => 'زمردي';
+
+  @override
+  String get accentMagenta => 'أرجواني وردي';
+
+  @override
+  String get accentIndigo => 'نيلي';
+
+  @override
+  String get accentOlive => 'زيتي';
+
+  @override
+  String get accentTeal => 'تركوازي';
+
+  @override
+  String get accentCyan => 'سماوي';
+
+  @override
+  String get accentOrange => 'برتقالي';
+
+  @override
+  String get accentRose => 'وردي';
+
+  @override
+  String get accentGrass => 'أخضر عشبي';
+
+  @override
+  String get accentPlum => 'خوخي';
+
+  @override
+  String get accentSlate => 'رمادي مائل للأزرق';
+
+  @override
+  String get accentCopper => 'نحاسي';
+
+  @override
+  String get settingsBackgroundReady => 'خلفيات جاهزة';
+
+  @override
+  String get backgroundDawn => 'ضباب الفجر';
+
+  @override
+  String get backgroundOcean => 'هدوء المحيط';
+
+  @override
+  String get backgroundForest => 'ظل الغابة';
+
+  @override
+  String get backgroundRose => 'الكوارتز الوردي';
+
+  @override
+  String get backgroundSlate => 'سماء رمادية';
+
+  @override
+  String get backgroundSand => 'كثبان رملية';
+
+  @override
+  String get backgroundAurora => 'الشفق القطبي';
+
+  @override
+  String get backgroundNebula => 'السديم';
+
+  @override
+  String get backgroundReset => 'إعادة إلى الافتراضي';
+
+  @override
+  String get backgroundCustom => 'من المعرض';
 }

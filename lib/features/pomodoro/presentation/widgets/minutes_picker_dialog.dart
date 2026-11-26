@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../core/l10n/l10n_context.dart';
+import '../../../../core/theme/app_spacing.dart';
 
 const int kMinTimerMinutes = 1;
 const int kMaxTimerMinutes = 500;
@@ -33,7 +34,7 @@ class _MinutesPickerDialog extends StatefulWidget {
 }
 
 class _MinutesPickerDialogState extends State<_MinutesPickerDialog> {
-  static const double _itemExtent = 48;
+  static const double _itemExtent = AppSpacing.controlHeight;
 
   late int _value = widget.initialMinutes.clamp(
     kMinTimerMinutes,
@@ -66,8 +67,8 @@ class _MinutesPickerDialogState extends State<_MinutesPickerDialog> {
               child: Container(
                 height: _itemExtent,
                 decoration: BoxDecoration(
-                  color: scheme.primary.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(12),
+                  color: scheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
                 ),
               ),
             ),
@@ -90,10 +91,11 @@ class _MinutesPickerDialogState extends State<_MinutesPickerDialog> {
                     child: Text(
                       '$minutes',
                       style: textTheme.headlineSmall?.copyWith(
-                        fontWeight:
-                            selected ? FontWeight.w700 : FontWeight.w400,
+                        fontWeight: selected
+                            ? FontWeight.w700
+                            : FontWeight.w400,
                         color: selected
-                            ? scheme.primary
+                            ? scheme.onPrimaryContainer
                             : scheme.onSurfaceVariant,
                       ),
                     ),

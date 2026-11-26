@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/l10n/l10n_context.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_app_bar.dart';
 import '../../../../core/widgets/app_scaffold.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -19,8 +22,9 @@ import '../controllers/report_export.dart';
 import '../formatting/duration_labels.dart';
 import '../widgets/minutes_bar_chart.dart';
 import '../widgets/minutes_picker_dialog.dart';
-import '../widgets/planner_stat_tile.dart';
 import '../widgets/stat_range_selector.dart';
+
+enum _ReportAction { pdf, copy }
 
 /// Pomodoro and task reports over a shared day/week/month/year range.
 class ReportsPage extends ConsumerStatefulWidget {
@@ -32,6 +36,45 @@ class ReportsPage extends ConsumerStatefulWidget {
 
 class _ReportsPageState extends ConsumerState<ReportsPage> {
   StatRange _range = StatRange.week;
+  bool _exporting = false;
+
+  Future<void> _export() async {
+    if (_exporting) return;
+    setState(() => _exporting = true);
+    try {
+      await exportReportPdf(context, ref, _range);
+    } finally {
+      if (mounted) setState(() => _exporting = false);
+    }
+  }
+
+  Future<void> _copySummary() async {
+    final l10n = context.l10n;
+    final sessions = ref.read(focusSessionsProvider);
+    final preferences = ref.read(plannerPreferencesProvider);
+    if (sessions is! AsyncData<List<FocusSession>> ||
+        preferences is! AsyncData<PlannerPreferences>) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.errorLoadFailed)));
+      return;
+    }
+    final stats = PomodoroStats(
+      sessions.value,
+      dailyGoalMinutes: preferences.value.dailyGoalMinutes,
+    );
+    final allTime = stats.totalDuration(allTimeFrom, allTimeTo);
+    final summary = l10n.reportSummary(
+      allTime.labelOf(context),
+      '${stats.completedCount(allTimeFrom, allTimeTo)}',
+      '${stats.focusDays(allTimeFrom, allTimeTo)}',
+    );
+    await Clipboard.setData(ClipboardData(text: summary));
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l10n.reportCopied)));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,13 +82,32 @@ class _ReportsPageState extends ConsumerState<ReportsPage> {
     return DefaultTabController(
       length: 2,
       child: AppScaffold(
+        applySafeArea: false,
+        transparentBackground: true,
         appBar: AppAppBar(
+          transparentDegree: 0.7,
           title: l10n.reports,
           actions: [
-            IconButton(
-              tooltip: l10n.reportExportPdf,
-              icon: const Icon(Icons.picture_as_pdf_outlined),
-              onPressed: () => unawaited(exportReportPdf(context, ref, _range)),
+            PopupMenuButton<_ReportAction>(
+              tooltip: l10n.actionMore,
+              icon: const Icon(Icons.more_vert),
+              onSelected: (action) => switch (action) {
+                _ReportAction.pdf => unawaited(_export()),
+                _ReportAction.copy => unawaited(_copySummary()),
+              },
+              itemBuilder: (_) => [
+                PopupMenuItem(
+                  value: _ReportAction.pdf,
+                  height: AppSpacing.minTouchTarget,
+                  enabled: !_exporting,
+                  child: Text(l10n.reportExportPdf),
+                ),
+                PopupMenuItem(
+                  value: _ReportAction.copy,
+                  height: AppSpacing.minTouchTarget,
+                  child: Text(l10n.reportCopySummary),
+                ),
+              ],
             ),
           ],
           bottom: TabBar(
@@ -72,36 +134,70 @@ class _ReportsPageState extends ConsumerState<ReportsPage> {
   }
 }
 
-/// Rounded, borderless surface used by every report section.
-class _SectionCard extends StatelessWidget {
-  const _SectionCard({required this.child, this.title});
+/// Loading and failure states for both report tabs. Every failure offers the
+/// same next step, so a reader never has to guess what to do.
+class _ReportStatus extends StatelessWidget {
+  const _ReportStatus({
+    required this.title,
+    this.body,
+    this.onRetry,
+    this.loading = false,
+  });
 
-  final Widget child;
-  final String? title;
+  final String title;
+  final String? body;
+  final VoidCallback? onRetry;
+  final bool loading;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Card(
-      elevation: 0,
-      margin: const EdgeInsets.symmetric(vertical: 6),
-      color: theme.colorScheme.surfaceContainerLow,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+    final colors = context.colors;
+    return Center(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.xl),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            if (title != null) ...[
-              Text(title!, style: theme.textTheme.titleMedium),
-              const SizedBox(height: 12),
+            if (loading)
+              const SizedBox(
+                width: 32,
+                height: 32,
+                child: CircularProgressIndicator(strokeWidth: 3),
+              )
+            else
+              Icon(Icons.error_outline, size: 32, color: colors.error),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              title,
+              style: AppTypography.title,
+              textAlign: TextAlign.center,
+            ),
+            if (body != null) ...[
+              const SizedBox(height: AppSpacing.sm),
+              Text(
+                body!,
+                style: AppTypography.body,
+                textAlign: TextAlign.center,
+              ),
             ],
-            child,
+            if (onRetry != null) ...[
+              const SizedBox(height: AppSpacing.lg),
+              FilledButton.icon(
+                onPressed: onRetry,
+                icon: const Icon(Icons.refresh),
+                label: Text(context.l10n.actionRetry),
+              ),
+            ],
           ],
         ),
       ),
     );
   }
+}
+
+void _retryReports(WidgetRef ref) {
+  ref.invalidate(focusSessionsProvider);
+  ref.invalidate(plannerPreferencesProvider);
 }
 
 /// Consecutive days with focus, ending today (or yesterday when nothing has
@@ -167,17 +263,25 @@ class PomodoroReport extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
+    final colors = context.colors;
     final sessionsAsync = ref.watch(focusSessionsProvider);
     final preferencesAsync = ref.watch(plannerPreferencesProvider);
 
-    if (sessionsAsync is! AsyncData<List<FocusSession>> ||
-        preferencesAsync is! AsyncData<PlannerPreferences>) {
-      return const Center(child: CircularProgressIndicator());
+    final sources = <AsyncValue<Object>>[sessionsAsync, preferencesAsync];
+    if (sources.any((value) => value.hasError)) {
+      return _ReportStatus(
+        title: l10n.errorLoadFailed,
+        body: l10n.errorGeneric,
+        onRetry: () => _retryReports(ref),
+      );
     }
-    final preferences = preferencesAsync.value;
+    if (sources.any((value) => !value.hasValue)) {
+      return _ReportStatus(loading: true, title: l10n.statusLoading);
+    }
+
+    final preferences = preferencesAsync.value!;
     final stats = PomodoroStats(
-      sessionsAsync.value,
+      sessionsAsync.value!,
       dailyGoalMinutes: preferences.dailyGoalMinutes,
     );
     final now = DateTime.now();
@@ -192,254 +296,186 @@ class PomodoroReport extends ConsumerWidget {
         ? 0.0
         : (today.inSeconds / goalSeconds).clamp(0, 1).toDouble();
     final allTime = stats.totalDuration(allTimeFrom, allTimeTo);
-    final recent = sessionsAsync.value
-        .where((session) => session.sessionType == SessionType.work)
-        .toList()
-      ..sort((a, b) => b.startTime.compareTo(a.startTime));
+    final recent =
+        sessionsAsync.value!
+            .where((session) => session.sessionType == SessionType.work)
+            .toList()
+          ..sort((a, b) => b.startTime.compareTo(a.startTime));
 
-    final summary = l10n.reportSummary(
-      allTime.labelOf(context),
-      '${stats.completedCount(allTimeFrom, allTimeTo)}',
-      '${stats.focusDays(allTimeFrom, allTimeTo)}',
+    final buckets = stats.bucketMinutes(range, now);
+    var peak = 0.0;
+    for (final value in buckets) {
+      if (value > peak) peak = value;
+    }
+    final peakLabel = l10n.reportPeak(
+      Duration(seconds: (peak * 60).round()).labelOf(context),
     );
 
     return ListView(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(AppSpacing.md),
       children: [
-        // --- Today vs. goal -------------------------------------------
-        Container(
-          margin: const EdgeInsets.symmetric(vertical: 6),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                theme.colorScheme.primary,
-                theme.colorScheme.primary.withValues(alpha: 0.72),
-              ],
-            ),
-          ),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(24),
-            onTap: () => unawaited(_editGoal(context, ref, preferences)),
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 110,
-                    height: 110,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        SizedBox.expand(
-                          child: CircularProgressIndicator(
-                            value: progress,
-                            strokeWidth: 10,
-                            strokeCap: StrokeCap.round,
-                            color: theme.colorScheme.onPrimary,
-                            backgroundColor: theme.colorScheme.onPrimary
-                                .withValues(alpha: 0.25),
-                          ),
-                        ),
-                        Text(
-                          '${(progress * 100).round()}%',
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            color: theme.colorScheme.onPrimary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: DefaultTextStyle.merge(
-                      style: TextStyle(color: theme.colorScheme.onPrimary),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.reportToday,
-                            style: theme.textTheme.labelLarge?.copyWith(
-                              color: theme.colorScheme.onPrimary,
-                            ),
-                          ),
-                          Text(
-                            today.labelOf(context),
-                            style: theme.textTheme.headlineSmall?.copyWith(
-                              color: theme.colorScheme.onPrimary,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            l10n.reportDailyGoal(
-                              today.labelOf(context),
-                              Duration(seconds: goalSeconds).labelOf(context),
-                            ),
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onPrimary,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.edit_outlined,
-                                size: 14,
-                                color: theme.colorScheme.onPrimary,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                l10n.reportDailyGoalEdit,
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: theme.colorScheme.onPrimary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+        // One chart tells the story; the figures below only support it.
+        Text(l10n.reportTotalFocus, style: AppTypography.title),
+        const SizedBox(height: AppSpacing.md),
+        StatRangeSelector(selected: range, onChanged: onRangeChanged),
+        const SizedBox(height: AppSpacing.lg),
+        MinutesBarChart(
+          minutes: buckets,
+          labels: _chartLabels(context, range, now),
+          peakLabel: peakLabel,
+        ),
+        const SizedBox(height: AppSpacing.md),
+        Divider(height: 1, color: colors.outlineVariant),
+        const SizedBox(height: AppSpacing.md),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: _MiniFigure(
+                label: l10n.reportRangeFocus,
+                value: rangeTotal.labelOf(context),
               ),
             ),
-          ),
-        ),
-
-        // --- Key numbers ----------------------------------------------
-        GridView.count(
-          crossAxisCount: 2,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          childAspectRatio: 1.9,
-          children: [
-            PlannerStatTile(
-              icon: Icons.timer_outlined,
-              label: l10n.reportTotalFocus,
-              value: allTime.labelOf(context),
+            Expanded(
+              child: _MiniFigure(
+                label: l10n.reportFocusDays,
+                value: '$rangeDays',
+              ),
             ),
-            PlannerStatTile(
-              icon: Icons.date_range_outlined,
-              label: l10n.reportThisWeek,
-              value: stats.totalDuration(week.from, week.to).labelOf(context),
+            Expanded(
+              child: _MiniFigure(
+                label: l10n.reportAveragePerDay,
+                value: rangeDays == 0
+                    ? Duration.zero.labelOf(context)
+                    : Duration(
+                        seconds: rangeTotal.inSeconds ~/ rangeDays,
+                      ).labelOf(context),
+              ),
             ),
-            PlannerStatTile(
-              icon: Icons.check_circle_outline,
-              label: l10n.reportCompletedCount,
-              value: '${stats.completedCount(allTimeFrom, allTimeTo)}',
+            Expanded(
+              child: _MiniFigure(
+                label: l10n.reportGoalDays,
+                value: '${stats.goalDays(window.from, window.to)}',
+              ),
             ),
-            PlannerStatTile(
-              icon: Icons.local_fire_department_outlined,
-              label: l10n.reportStreak,
-              value: '${_streak(stats, now)}',
+            Expanded(
+              child: _MiniFigure(
+                label: l10n.reportStreak,
+                value: '${_streak(stats, now)}',
+              ),
             ),
           ],
         ),
 
-        // --- Chart ----------------------------------------------------
-        _SectionCard(
-          title: l10n.reportRangeFocus,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              StatRangeSelector(selected: range, onChanged: onRangeChanged),
-              const SizedBox(height: 16),
-              MinutesBarChart(
-                minutes: stats.bucketMinutes(range, now),
-                labels: _chartLabels(context, range, now),
-              ),
-              const SizedBox(height: 12),
-              Row(
+        const SizedBox(height: AppSpacing.xl),
+
+        // Today's goal stays quiet: one row, one secondary edit affordance.
+        Semantics(
+          button: true,
+          label: l10n.reportDailyGoalEdit,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+            onTap: () => unawaited(_editGoal(context, ref, preferences)),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+              child: Row(
                 children: [
-                  Expanded(
-                    child: _MiniFigure(
-                      label: l10n.reportRangeFocus,
-                      value: rangeTotal.labelOf(context),
+                  SizedBox(
+                    width: 64,
+                    height: 64,
+                    child: CircularProgressIndicator(
+                      value: progress,
+                      strokeWidth: 8,
+                      strokeCap: StrokeCap.round,
+                      color: colors.primary,
+                      backgroundColor: colors.primaryContainer,
                     ),
                   ),
+                  const SizedBox(width: AppSpacing.md),
                   Expanded(
-                    child: _MiniFigure(
-                      label: l10n.reportFocusDays,
-                      value: '$rangeDays',
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.reportToday,
+                          style: AppTypography.caption.copyWith(
+                            color: colors.onSurfaceVariant,
+                          ),
+                        ),
+                        Text(
+                          today.labelOf(context),
+                          style: AppTypography.heading,
+                        ),
+                        Text(
+                          l10n.reportDailyGoal(
+                            today.labelOf(context),
+                            Duration(seconds: goalSeconds).labelOf(context),
+                          ),
+                          style: AppTypography.body,
+                        ),
+                      ],
                     ),
                   ),
-                  Expanded(
-                    child: _MiniFigure(
-                      label: l10n.reportAveragePerDay,
-                      value: rangeDays == 0
-                          ? Duration.zero.labelOf(context)
-                          : Duration(
-                              seconds: rangeTotal.inSeconds ~/ rangeDays,
-                            ).labelOf(context),
-                    ),
-                  ),
-                  Expanded(
-                    child: _MiniFigure(
-                      label: l10n.reportGoalDays,
-                      value: '${stats.goalDays(window.from, window.to)}',
-                    ),
+                  Icon(
+                    Icons.edit_outlined,
+                    size: 20,
+                    color: colors.onSurfaceVariant,
                   ),
                 ],
               ),
+            ),
+          ),
+        ),
+
+        const SizedBox(height: AppSpacing.xl),
+        Text(l10n.reportRecords, style: AppTypography.title),
+        const SizedBox(height: AppSpacing.sm),
+        if (recent.isEmpty)
+          Padding(
+            padding: const EdgeInsets.all(AppSpacing.xl),
+            child: Text(
+              l10n.reportNoData,
+              style: AppTypography.body,
+              textAlign: TextAlign.center,
+            ),
+          )
+        else
+          Column(
+            children: [
+              for (final session in recent.take(50)) ...[
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(
+                    session.completed
+                        ? Icons.check_circle_outline
+                        : Icons.timelapse_outlined,
+                    color: session.completed
+                        ? colors.primary
+                        : colors.onSurfaceVariant,
+                  ),
+                  title: Text(
+                    session.label.isEmpty
+                        ? _phaseLabel(session.sessionType, l10n)
+                        : session.label,
+                    style: AppTypography.body,
+                  ),
+                  subtitle: Text(
+                    '${session.startTime.year}/${session.startTime.month}/${session.startTime.day}  '
+                    '${session.startTime.hour.toString().padLeft(2, '0')}:'
+                    '${session.startTime.minute.toString().padLeft(2, '0')}',
+                    style: AppTypography.caption.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+                  trailing: Text(
+                    session.actualDuration.labelOf(context),
+                    style: AppTypography.label,
+                  ),
+                ),
+                Divider(height: 1, color: colors.outlineVariant),
+              ],
             ],
           ),
-        ),
-
-        Align(
-          alignment: AlignmentDirectional.centerStart,
-          child: TextButton.icon(
-            icon: const Icon(Icons.copy, size: 18),
-            label: Text(l10n.reportCopySummary),
-            onPressed: () {
-              unawaited(Clipboard.setData(ClipboardData(text: summary)));
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(l10n.reportCopied)));
-            },
-          ),
-        ),
-
-        // --- Records --------------------------------------------------
-        _SectionCard(
-          title: l10n.reportRecords,
-          child: recent.isEmpty
-              ? Text(l10n.reportNoData)
-              : Column(
-                  children: [
-                    for (final session in recent.take(50))
-                      ListTile(
-                        dense: true,
-                        contentPadding: EdgeInsets.zero,
-                        leading: Icon(
-                          session.completed
-                              ? Icons.check_circle
-                              : Icons.timelapse,
-                          size: 20,
-                          color: session.completed
-                              ? theme.colorScheme.primary
-                              : theme.colorScheme.outline,
-                        ),
-                        title: Text(
-                          session.label.isEmpty
-                              ? _phaseLabel(session.sessionType, l10n)
-                              : session.label,
-                        ),
-                        subtitle: Text(
-                          '${session.startTime.year}/${session.startTime.month}/${session.startTime.day}  '
-                          '${session.startTime.hour.toString().padLeft(2, '0')}:'
-                          '${session.startTime.minute.toString().padLeft(2, '0')}',
-                        ),
-                        trailing: Text(
-                          session.actualDuration.labelOf(context),
-                          style: theme.textTheme.labelLarge,
-                        ),
-                      ),
-                  ],
-                ),
-        ),
       ],
     );
   }
@@ -453,19 +489,16 @@ class _MiniFigure extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final colors = context.colors;
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          value,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.titleSmall,
-        ),
-        const SizedBox(height: 2),
+        Text(value, textAlign: TextAlign.center, style: AppTypography.title),
+        const SizedBox(height: AppSpacing.xs),
         Text(
           label,
           textAlign: TextAlign.center,
-          style: theme.textTheme.labelSmall,
+          style: AppTypography.caption.copyWith(color: colors.onSurfaceVariant),
         ),
       ],
     );
@@ -485,17 +518,25 @@ class TasksReport extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
+    final colors = context.colors;
     final sessionsAsync = ref.watch(focusSessionsProvider);
     final preferencesAsync = ref.watch(plannerPreferencesProvider);
 
-    if (sessionsAsync is! AsyncData<List<FocusSession>> ||
-        preferencesAsync is! AsyncData<PlannerPreferences>) {
-      return const Center(child: CircularProgressIndicator());
+    final sources = <AsyncValue<Object>>[sessionsAsync, preferencesAsync];
+    if (sources.any((value) => value.hasError)) {
+      return _ReportStatus(
+        title: l10n.errorLoadFailed,
+        body: l10n.errorGeneric,
+        onRetry: () => _retryReports(ref),
+      );
     }
-    final preferences = preferencesAsync.value;
+    if (sources.any((value) => !value.hasValue)) {
+      return _ReportStatus(loading: true, title: l10n.statusLoading);
+    }
+
+    final preferences = preferencesAsync.value!;
     final stats = PomodoroStats(
-      sessionsAsync.value,
+      sessionsAsync.value!,
       dailyGoalMinutes: preferences.dailyGoalMinutes,
     );
     final window = windowFor(range, DateTime.now());
@@ -506,58 +547,60 @@ class TasksReport extends ConsumerWidget {
     final total = byLabel.fold<int>(0, (sum, entry) => sum + entry.value);
 
     return ListView(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(AppSpacing.md),
       children: [
         StatRangeSelector(selected: range, onChanged: onRangeChanged),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.lg),
+        Text(l10n.reportBySubject, style: AppTypography.title),
+        const SizedBox(height: AppSpacing.md),
         if (byLabel.isEmpty)
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(32),
-              child: Text(l10n.reportNoData),
+          Padding(
+            padding: const EdgeInsets.all(AppSpacing.xl),
+            child: Text(
+              l10n.reportNoData,
+              style: AppTypography.body,
+              textAlign: TextAlign.center,
             ),
           )
         else
-          _SectionCard(
-            title: l10n.reportRangeFocus,
-            child: Column(
-              children: [
-                for (final entry in byLabel)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+          Column(
+            children: [
+              for (final entry in byLabel) ...[
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
                       children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                entry.key.isEmpty
-                                    ? l10n.reportUntitled
-                                    : entry.key,
-                                style: theme.textTheme.bodyLarge,
-                              ),
-                            ),
-                            Text(
-                              '${Duration(seconds: entry.value).labelOf(context)}'
-                              '  •  ${total == 0 ? 0 : (entry.value * 100 / total).round()}%',
-                              style: theme.textTheme.labelLarge,
-                            ),
-                          ],
+                        Expanded(
+                          child: Text(
+                            entry.key.isEmpty ? l10n.reportUntitled : entry.key,
+                            style: AppTypography.body,
+                          ),
                         ),
-                        const SizedBox(height: 6),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: LinearProgressIndicator(
-                            value: entry.value / maxValue,
-                            minHeight: 10,
+                        Text(
+                          '${Duration(seconds: entry.value).labelOf(context)}'
+                          '  •  ${total == 0 ? 0 : (entry.value * 100 / total).round()}%',
+                          style: AppTypography.caption.copyWith(
+                            color: colors.onSurfaceVariant,
                           ),
                         ),
                       ],
                     ),
-                  ),
+                    const SizedBox(height: AppSpacing.sm),
+                    LinearProgressIndicator(
+                      value: entry.value / maxValue,
+                      minHeight: 6,
+                      color: colors.primary,
+                      backgroundColor: colors.primaryContainer,
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                  child: Divider(height: 1, color: colors.outlineVariant),
+                ),
               ],
-            ),
+            ],
           ),
       ],
     );

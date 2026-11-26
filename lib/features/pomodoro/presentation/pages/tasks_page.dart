@@ -18,14 +18,11 @@ import '../../domain/stats/pomodoro_stats.dart';
 import '../controllers/focus_totals.dart';
 import '../controllers/planner_actions.dart';
 import '../controllers/planner_providers.dart';
-import '../formatting/duration_labels.dart';
 import '../sheets/add_task_field.dart';
 import '../sheets/task_edit_sheet.dart';
-import '../widgets/app_background.dart';
-import '../widgets/goals_card.dart';
-import '../widgets/planner_stat_tile.dart';
 import '../widgets/subjects_strip.dart';
 import '../widgets/task_tile.dart';
+import '../widgets/tasks_summary_card.dart';
 import 'focus_launcher.dart';
 import 'reminders_page.dart';
 
@@ -43,8 +40,10 @@ class TasksPage extends ConsumerWidget {
     return DefaultTabController(
       length: 3,
       child: AppScaffold(
+        transparentBackground: true,
         appBar: AppAppBar(
           title: l10n.tasks,
+          transparentDegree: 0.7,
           bottom: TabBar(
             tabs: [
               Tab(text: l10n.tasksToday),
@@ -80,23 +79,20 @@ class TasksPage extends ConsumerWidget {
           ],
         ),
         drawer: const _TasksDrawer(),
-        body: AppBackground(
-          target: BackgroundTarget.tasks,
-          child: Column(
-            children: [
-              const GoalsCard(),
-              const SubjectsStrip(),
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    _TaskScope(scope: _Scope.today, sort: sort),
-                    _TaskScope(scope: _Scope.tomorrow, sort: sort),
-                    _TaskScope(scope: _Scope.week, sort: sort),
-                  ],
-                ),
+        body: Column(
+          children: [
+            //     const GoalsCard(),
+            const SubjectsStrip(),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  _TaskScope(scope: _Scope.today, sort: sort),
+                  _TaskScope(scope: _Scope.tomorrow, sort: sort),
+                  _TaskScope(scope: _Scope.week, sort: sort),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -285,44 +281,11 @@ class _TaskScopeState extends ConsumerState<_TaskScope> {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(AppSpacing.sm),
-          child: Row(
-            children: [
-              if (widget.scope != _Scope.tomorrow)
-                Expanded(
-                  child: PlannerStatTile(
-                    icon: Icons.check_circle_outline,
-                    label: l10n.tasksCompletedCount,
-                    value: '${done.length}',
-                  ),
-                ),
-              if (widget.scope != _Scope.tomorrow)
-                Expanded(
-                  child: PlannerStatTile(
-                    icon: Icons.timer_outlined,
-                    label: l10n.tasksElapsedTime,
-                    value: stats
-                        .totalDuration(window.from, window.to)
-                        .labelOf(context),
-                  ),
-                ),
-              Expanded(
-                child: PlannerStatTile(
-                  icon: Icons.pending_actions_outlined,
-                  label: l10n.tasksRemainingCount,
-                  value: '${pending.length}',
-                ),
-              ),
-              Expanded(
-                child: PlannerStatTile(
-                  icon: Icons.hourglass_bottom,
-                  label: l10n.tasksEstimatedTime,
-                  value: Duration(seconds: estimatedSeconds).labelOf(context),
-                ),
-              ),
-            ],
-          ),
+        TasksSummaryCard(
+          estimated: Duration(seconds: estimatedSeconds),
+          toDo: pending.length,
+          elapsed: stats.totalDuration(window.from, window.to),
+          completed: done.length,
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
@@ -343,7 +306,8 @@ class _TaskScopeState extends ConsumerState<_TaskScope> {
                     return TaskTile(
                       task: task,
                       subjects: subjects,
-                      total: (task.id == null ? null : taskTotals[task.id!]) ??
+                      total:
+                          (task.id == null ? null : taskTotals[task.id!]) ??
                           const FocusTotal(),
                       onToggleDone: () => ref
                           .read(plannerActionsProvider)

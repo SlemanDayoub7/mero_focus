@@ -6,6 +6,7 @@ import '../config/app_environment.dart';
 import '../database/app_database.dart';
 import '../observability/analytics_tracker.dart';
 import '../observability/crash_reporter.dart';
+import '../theme/app_accent.dart';
 
 /// Selected by the entry point via `bootstrap()` and overridable in tests.
 final appEnvironmentProvider = Provider<AppEnvironment>((ref) {
@@ -77,5 +78,27 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
   Future<void> setThemeMode(ThemeMode mode) async {
     state = mode;
     await ref.read(sharedPreferencesProvider).setString(_storageKey, mode.name);
+  }
+}
+
+/// The user's selected primary colour. Persisted through
+/// [sharedPreferencesProvider] and applied to both themes by `AppTheme`.
+final primaryAccentProvider =
+    NotifierProvider<PrimaryAccentNotifier, AppAccent>(
+  PrimaryAccentNotifier.new,
+);
+
+class PrimaryAccentNotifier extends Notifier<AppAccent> {
+  static const _storageKey = 'primary_accent';
+
+  @override
+  AppAccent build() {
+    final id = ref.watch(sharedPreferencesProvider).getString(_storageKey);
+    return AppAccent.fromId(id);
+  }
+
+  Future<void> setAccent(AppAccent accent) async {
+    state = accent;
+    await ref.read(sharedPreferencesProvider).setString(_storageKey, accent.id);
   }
 }

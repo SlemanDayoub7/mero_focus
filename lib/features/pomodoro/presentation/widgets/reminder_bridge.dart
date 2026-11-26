@@ -5,8 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/l10n/l10n_context.dart';
 import '../../data/services/reminder_notification_service.dart';
-import '../../domain/entities/subject.dart';
 import '../../domain/entities/scheduled_item.dart';
+import '../../domain/entities/subject.dart';
 import '../../domain/reminders_schedule.dart';
 import '../controllers/planner_providers.dart';
 import '../controllers/reminders_provider.dart';
@@ -16,8 +16,9 @@ import '../pages/focus_launcher.dart';
 /// turns a tapped notification into "open the app and start studying".
 ///
 /// Refreshes when reminders change, when a session is recorded (the smart
-/// reminder skips a day already studied), and whenever the app comes back to
-/// the foreground (keeps the 30-day window topped up).
+/// reminder skips a day already studied), when notification permission changes,
+/// and whenever the app comes back to the foreground (keeps the 30-day window
+/// topped up).
 class ReminderBridge extends ConsumerStatefulWidget {
   const ReminderBridge({super.key, required this.child});
 
@@ -123,6 +124,7 @@ class _ReminderBridgeState extends ConsumerState<ReminderBridge>
     ref.listen(remindersProvider, (_, _) => unawaited(_sync()));
     ref.listen(smartReminderProvider, (_, _) => unawaited(_sync()));
     ref.listen(studiedTodayProvider, (_, _) => unawaited(_sync()));
+    ref.listen(notificationsEnabledProvider, (_, _) => unawaited(_sync()));
     return widget.child;
   }
 }

@@ -19,10 +19,26 @@ class StatRangeSelector extends StatelessWidget {
     final l10n = context.l10n;
     return SegmentedButton<StatRange>(
       segments: [
-        ButtonSegment(value: StatRange.day, label: Text(l10n.rangeDay)),
-        ButtonSegment(value: StatRange.week, label: Text(l10n.rangeWeek)),
-        ButtonSegment(value: StatRange.month, label: Text(l10n.rangeMonth)),
-        ButtonSegment(value: StatRange.year, label: Text(l10n.rangeYear)),
+        ButtonSegment(
+          value: StatRange.day,
+          label: Text(l10n.rangeDay),
+          tooltip: l10n.rangeDay,
+        ),
+        ButtonSegment(
+          value: StatRange.week,
+          label: Text(l10n.rangeWeek),
+          tooltip: l10n.rangeWeek,
+        ),
+        ButtonSegment(
+          value: StatRange.month,
+          label: Text(l10n.rangeMonth),
+          tooltip: l10n.rangeMonth,
+        ),
+        ButtonSegment(
+          value: StatRange.year,
+          label: Text(l10n.rangeYear),
+          tooltip: l10n.rangeYear,
+        ),
       ],
       selected: {selected},
       onSelectionChanged: (selection) => onChanged(selection.first),

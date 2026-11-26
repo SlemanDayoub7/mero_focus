@@ -4,7 +4,8 @@ import '../../../../core/theme/app_spacing.dart';
 
 /// One big primary action and an optional secondary one. The page decides
 /// which actions make sense for the current timer state, so this widget
-/// contains no timer logic.
+/// contains no timer logic. Theme styles give both buttons a 48 dp target;
+/// the filled button is the only dominant action on the screen.
 class TimerControls extends StatelessWidget {
   const TimerControls({
     super.key,
@@ -29,25 +30,13 @@ class TimerControls extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         FilledButton.icon(
-          style: FilledButton.styleFrom(
-            minimumSize: const Size.fromHeight(60),
-            shape: const StadiumBorder(),
-            textStyle: Theme.of(context).textTheme.titleMedium,
-          ),
-          icon: Icon(primaryIcon, size: 28),
+          icon: Icon(primaryIcon),
           label: Text(primaryLabel),
           onPressed: onPrimary,
         ),
         if (secondary != null && onSecondary != null) ...[
-          const SizedBox(height: AppSpacing.sm),
-          OutlinedButton(
-            style: OutlinedButton.styleFrom(
-              minimumSize: const Size.fromHeight(48),
-              shape: const StadiumBorder(),
-            ),
-            onPressed: onSecondary,
-            child: Text(secondary),
-          ),
+          const SizedBox(height: AppSpacing.touchTargetGap),
+          OutlinedButton(onPressed: onSecondary, child: Text(secondary)),
         ],
       ],
     );

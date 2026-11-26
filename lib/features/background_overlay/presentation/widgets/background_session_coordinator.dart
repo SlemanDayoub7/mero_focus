@@ -82,13 +82,14 @@ class _BackgroundSessionCoordinatorState
       timeLabel: l10n.overlayTimeLabel,
     );
 
+    final roundLabel = l10n.timerRound(snapshot.completedRounds + 1);
     unawaited(
       ref.read(backgroundSessionProvider.notifier).sync(
             timerRunning: snapshot.isRunning,
             appInBackground: _appInBackground,
-            // The notification shows the phase and the live time (MM:SS).
-            notificationTitle: phaseLabel,
-            notificationText: overlayData.formattedTime,
+            // Clear, glanceable notification: phase + live time, round as context.
+            notificationTitle: '$phaseLabel  •  ${overlayData.formattedTime}',
+            notificationText: roundLabel,
             overlayData: overlayData,
           ),
     );

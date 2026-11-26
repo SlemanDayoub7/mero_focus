@@ -4,6 +4,8 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/painting.dart' show TextPainter, TextSpan, TextStyle;
 
+import '../../../../core/theme/app_typography.dart';
+
 /// One small figure on the report (e.g. "Focus days" / "12").
 class ReportPdfStat {
   const ReportPdfStat(this.label, this.value);
@@ -65,8 +67,8 @@ class ReportPdfData {
   final List<ReportPdfRow> rows;
   final String footer;
 
-  /// Optional picture drawn behind the whole page (cover-fit, with a light
-  /// veil so the cards stay readable). The caller owns and disposes it.
+  /// Optional picture drawn behind the whole page (cover-fit, with a plain
+  /// paper veil so the figures stay readable). The caller owns and disposes it.
   final ui.Image? background;
 }
 
@@ -109,12 +111,16 @@ class _ReportPainter {
   static const double _margin = 32;
   static const double _contentWidth = _w - 2 * _margin;
 
-  static const ui.Color _primary = ui.Color(0xFF2E6FD8);
-  static const ui.Color _primaryLight = ui.Color(0xFF5B8DEF);
-  static const ui.Color _ink = ui.Color(0xFF1B2333);
-  static const ui.Color _muted = ui.Color(0xFF6B7487);
-  static const ui.Color _track = ui.Color(0xFFE6EAF5);
-  static const ui.Color _cardBorder = ui.Color(0xFFE3E7F1);
+  // Print equivalents of the in-app tokens. This canvas paints PDF pixels,
+  // so it owns its ui.Color values instead of reading context.colors.
+  static const ui.Color _paper = ui.Color(0xFFFFFFFF);
+  static const ui.Color _charcoal = ui.Color(0xFF2C2C2C);
+  static const ui.Color _royal = ui.Color(0xFF1A4B8C);
+  static const ui.Color _sky = ui.Color(0xFF12628F);
+  static const ui.Color _ice = ui.Color(0xFF85C5E3);
+  static const ui.Color _yellow = ui.Color(0xFFC8B446);
+  static const ui.Color _iceTrack = ui.Color(0x3385C5E3);
+  static const ui.Color _paperVeil = ui.Color(0xE6FFFFFF);
 
   /// Rect given in left-to-right coordinates, mirrored when the page is RTL.
   ui.Rect _rect(double x, double y, double w, double h) {
@@ -124,21 +130,15 @@ class _ReportPainter {
   void _card(double x, double y, double w, double h) {
     final rrect = ui.RRect.fromRectAndRadius(
       _rect(x, y, w, h),
-      const ui.Radius.circular(20),
+      const ui.Radius.circular(16),
     );
-    canvas.drawRRect(
-      rrect,
-      ui.Paint()
-        ..color = hasBackground
-            ? const ui.Color(0xEBFFFFFF)
-            : const ui.Color(0xFFFFFFFF),
-    );
+    canvas.drawRRect(rrect, ui.Paint()..color = _paper);
     canvas.drawRRect(
       rrect,
       ui.Paint()
         ..style = ui.PaintingStyle.stroke
         ..strokeWidth = 1
-        ..color = _cardBorder,
+        ..color = _iceTrack,
     );
   }
 
@@ -148,7 +148,7 @@ class _ReportPainter {
     required double y,
     required double width,
     required double size,
-    ui.Color color = _ink,
+    ui.Color color = _charcoal,
     bool bold = false,
     ui.TextAlign align = ui.TextAlign.start,
     int maxLines = 1,
@@ -158,6 +158,8 @@ class _ReportPainter {
         text: text,
         style: TextStyle(
           fontSize: size,
+          height: 1.35,
+          fontFamily: AppTypography.family,
           color: color,
           fontWeight: bold ? ui.FontWeight.w700 : ui.FontWeight.w400,
         ),
@@ -180,11 +182,11 @@ class _ReportPainter {
 
   void paint(ReportPdfData d) {
     const page = ui.Rect.fromLTWH(0, 0, _w, ReportImageRenderer.pageHeight);
-    canvas.drawRect(page, ui.Paint()..color = const ui.Color(0xFFF5F7FC));
+    canvas.drawRect(page, ui.Paint()..color = _paper);
     final background = d.background;
     if (background != null) {
       _drawCover(background, page);
-      canvas.drawRect(page, ui.Paint()..color = const ui.Color(0x8CF5F7FC));
+      canvas.drawRect(page, ui.Paint()..color = _paperVeil);
     }
 
     _header(d);
@@ -196,10 +198,10 @@ class _ReportPainter {
     _text(
       d.footer,
       x: _margin,
-      y: 820,
+      y: 822,
       width: _contentWidth,
-      size: 10,
-      color: _muted,
+      size: 12,
+      color: _sky,
       align: ui.TextAlign.center,
     );
   }
@@ -221,54 +223,47 @@ class _ReportPainter {
   }
 
   void _header(ReportPdfData d) {
-    const rect = ui.Rect.fromLTWH(0, 0, _w, 130);
     canvas.drawRRect(
       ui.RRect.fromRectAndCorners(
-        rect,
-        bottomLeft: const ui.Radius.circular(28),
-        bottomRight: const ui.Radius.circular(28),
+        const ui.Rect.fromLTWH(0, 0, _w, 124),
+        bottomLeft: const ui.Radius.circular(16),
+        bottomRight: const ui.Radius.circular(16),
       ),
-      ui.Paint()
-        ..shader = ui.Gradient.linear(
-          const ui.Offset(0, 0),
-          const ui.Offset(_w, 130),
-          const <ui.Color>[_primary, _primaryLight],
-        ),
+      ui.Paint()..color = _royal,
     );
-    const white = ui.Color(0xFFFFFFFF);
     _text(
       d.title,
       x: _margin,
-      y: 32,
+      y: 26,
       width: _contentWidth,
-      size: 26,
-      color: white,
+      size: 30,
+      color: _paper,
       bold: true,
     );
     _text(
       d.subtitle,
       x: _margin,
-      y: 70,
+      y: 68,
       width: _contentWidth,
-      size: 13,
-      color: const ui.Color(0xE6FFFFFF),
+      size: 16,
+      color: _paper,
     );
     _text(
       d.generated,
       x: _margin,
       y: 92,
       width: _contentWidth,
-      size: 11,
-      color: const ui.Color(0xB3FFFFFF),
+      size: 14,
+      color: _paper,
     );
   }
 
   void _todayCard(ReportPdfData d) {
-    const y = 146.0;
-    const h = 116.0;
+    const y = 140.0;
+    const h = 128.0;
     _card(_margin, y, _contentWidth, h);
 
-    const radius = 38.0;
+    const radius = 36.0;
     const ringX = _margin + 16 + radius + 4;
     const ringY = y + h / 2;
     final center = ui.Offset(rtl ? _w - ringX : ringX, ringY);
@@ -279,8 +274,8 @@ class _ReportPainter {
       radius,
       ui.Paint()
         ..style = ui.PaintingStyle.stroke
-        ..strokeWidth = 11
-        ..color = _track,
+        ..strokeWidth = 10
+        ..color = _iceTrack,
     );
     final progress = d.progress.clamp(0.0, 1.0).toDouble();
     if (progress > 0) {
@@ -291,53 +286,53 @@ class _ReportPainter {
         false,
         ui.Paint()
           ..style = ui.PaintingStyle.stroke
-          ..strokeWidth = 11
+          ..strokeWidth = 10
           ..strokeCap = ui.StrokeCap.round
-          ..color = _primary,
+          ..color = _royal,
       );
     }
     _text(
       '${(progress * 100).round()}%',
       x: ringX - radius,
-      y: ringY - 12,
+      y: ringY - 13,
       width: radius * 2,
       size: 20,
       bold: true,
       align: ui.TextAlign.center,
     );
 
-    const textX = _margin + 16 + radius * 2 + 28;
+    const textX = _margin + 16 + radius * 2 + 20;
     const textW = _contentWidth - (textX - _margin) - 16;
     _text(
       d.todayLabel,
       x: textX,
-      y: y + 18,
+      y: y + 16,
       width: textW,
-      size: 12,
-      color: _muted,
+      size: 14,
+      color: _sky,
     );
     _text(
       d.todayValue,
       x: textX,
       y: y + 36,
       width: textW,
-      size: 28,
+      size: 30,
       bold: true,
     );
     _text(
       d.goalText,
       x: textX,
-      y: y + 76,
+      y: y + 80,
       width: textW,
-      size: 12,
-      color: _muted,
+      size: 14,
+      color: _charcoal,
       maxLines: 2,
     );
   }
 
   void _statsGrid(ReportPdfData d) {
-    const top = 276.0;
-    const gap = 10.0;
+    const top = 284.0;
+    const gap = 8.0;
     const cardH = 62.0;
     const cardW = (_contentWidth - 12) / 2;
     final count = math.min(d.stats.length, 4);
@@ -350,50 +345,50 @@ class _ReportPainter {
       _text(
         d.stats[i].value,
         x: x + 16,
-        y: y + 10,
+        y: y + 8,
         width: cardW - 32,
-        size: 20,
+        size: 22,
         bold: true,
-        color: _primary,
+        color: _royal,
       );
       _text(
         d.stats[i].label,
         x: x + 16,
-        y: y + 38,
+        y: y + 36,
         width: cardW - 32,
-        size: 11,
-        color: _muted,
+        size: 14,
+        color: _charcoal,
       );
     }
   }
 
   void _chartCard(ReportPdfData d) {
-    const y = 424.0;
-    const h = 170.0;
+    const y = 432.0;
+    const h = 176.0;
     _card(_margin, y, _contentWidth, h);
 
     const inner = _contentWidth - 32;
     _text(
       d.chartTitle,
       x: _margin + 16,
-      y: y + 12,
-      width: inner,
-      size: 14,
+      y: y + 10,
+      width: inner - 180,
+      size: 20,
       bold: true,
     );
     _text(
       d.peakLabel,
-      x: _margin + 16,
+      x: _margin + 16 + inner - 180,
       y: y + 14,
-      width: inner,
-      size: 11,
-      color: _muted,
+      width: 180,
+      size: 14,
+      bold: true,
       align: ui.TextAlign.end,
     );
 
     final bars = d.bars;
     if (bars.isEmpty) return;
-    const top = y + 40;
+    const top = y + 54;
     const baseline = y + 138;
     const area = baseline - top;
     var peak = 0.0;
@@ -405,29 +400,26 @@ class _ReportPainter {
       }
     }
     final slot = inner / bars.length;
-    final barWidth = math.max(3.0, slot * 0.62);
+    final barWidth = math.max(4.0, slot * 0.62);
     for (var i = 0; i < bars.length; i++) {
       final v = bars[i];
-      final height = v <= 0 ? 3.0 : 6 + (v / peak) * (area - 6);
-      final color = v <= 0
-          ? _track
-          : (i == peakIndex ? _primary : const ui.Color(0x8C2E6FD8));
-      _bar(
-        _margin + 16 + i * slot + (slot - barWidth) / 2,
-        baseline - height,
-        barWidth,
-        height,
-        color,
-        3,
-      );
+      final height = v <= 0 ? 4.0 : 6 + (v / peak) * (area - 6);
+      final color = v <= 0 ? _iceTrack : (i == peakIndex ? _royal : _ice);
+      final barX = _margin + 16 + i * slot + (slot - barWidth) / 2;
+      _bar(barX, baseline - height, barWidth, height, color, 3);
+      if (i == peakIndex && v > 0) {
+        // Textual peak label above the chart carries the meaning; this mark
+        // only makes the same peak easy to find at a glance.
+        _bar(barX, top - 6, barWidth, 5, _yellow, 2);
+      }
       if (i < d.barLabels.length && d.barLabels[i].isNotEmpty) {
         _text(
           d.barLabels[i],
           x: _margin + 16 + i * slot - 4,
           y: baseline + 4,
           width: slot + 8,
-          size: 9,
-          color: _muted,
+          size: 12,
+          color: _charcoal,
           align: ui.TextAlign.center,
         );
       }
@@ -435,43 +427,50 @@ class _ReportPainter {
   }
 
   void _rowsCard(ReportPdfData d) {
-    const y = 608.0;
-    const h = 200.0;
+    const y = 620.0;
+    const h = 196.0;
     _card(_margin, y, _contentWidth, h);
     const inner = _contentWidth - 32;
     _text(
       d.rowsTitle,
       x: _margin + 16,
-      y: y + 14,
+      y: y + 12,
       width: inner,
-      size: 14,
+      size: 20,
       bold: true,
     );
 
     final rows = d.rows.take(5).toList();
     for (var i = 0; i < rows.length; i++) {
-      final rowY = y + 44 + i * 30.0;
+      final rowY = y + 46 + i * 30.0;
       final row = rows[i];
       _text(
         row.label,
         x: _margin + 16,
         y: rowY,
         width: inner - 110,
-        size: 12,
+        size: 14,
       );
       _text(
         row.value,
         x: _margin + 16 + inner - 106,
         y: rowY,
         width: 106,
-        size: 12,
-        color: _muted,
+        size: 14,
+        color: _sky,
         align: ui.TextAlign.end,
       );
-      _bar(_margin + 16, rowY + 18, inner, 6, _track, 3);
+      _bar(_margin + 16, rowY + 20, inner, 6, _iceTrack, 3);
       final fraction = row.fraction.clamp(0.0, 1.0).toDouble();
       if (fraction > 0) {
-        _bar(_margin + 16, rowY + 18, math.max(6.0, inner * fraction), 6, _primary, 3);
+        _bar(
+          _margin + 16,
+          rowY + 20,
+          math.max(6.0, inner * fraction),
+          6,
+          _royal,
+          3,
+        );
       }
     }
   }

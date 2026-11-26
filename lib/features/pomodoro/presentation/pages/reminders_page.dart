@@ -3,7 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/l10n/l10n_context.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_app_bar.dart';
 import '../../../../core/widgets/app_scaffold.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -20,15 +23,55 @@ enum _ReminderMenu { edit, delete }
 /// Study reminders: the user's own, plus ready-made suggestions and a smart
 /// reminder that only fires on days nothing has been studied. Everything is
 /// stored and scheduled locally, so it works offline.
-class RemindersPage extends ConsumerWidget {
+class RemindersPage extends ConsumerStatefulWidget {
   const RemindersPage({super.key});
 
-  void _edit(BuildContext context, Reminder reminder) {
+  @override
+  ConsumerState<RemindersPage> createState() => _RemindersPageState();
+}
+
+class _RemindersPageState extends ConsumerState<RemindersPage> {
+  bool _requesting = false;
+  bool _permissionDenied = false;
+  bool _savingSmart = false;
+
+  void _edit(Reminder reminder) {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       builder: (_) => ReminderEditSheet(initial: reminder),
     );
+  }
+
+  Future<void> _requestPermission() async {
+    if (_requesting) return;
+    setState(() {
+      _requesting = true;
+      _permissionDenied = false;
+    });
+    final granted = await ref.read(reminderServiceProvider).requestPermission();
+    ref.invalidate(notificationsEnabledProvider);
+    if (!mounted) return;
+    setState(() {
+      _requesting = false;
+      if (!granted) _permissionDenied = true;
+    });
+  }
+
+  Future<void> _updateSmart(SmartReminder value) async {
+    if (_savingSmart) return;
+    setState(() => _savingSmart = true);
+    try {
+      await ref.read(smartReminderProvider.notifier).update(value);
+      if (value.enabled) {
+        final service = ref.read(reminderServiceProvider);
+        if (!await service.notificationsEnabled()) {
+          await _requestPermission();
+        }
+      }
+    } finally {
+      if (mounted) setState(() => _savingSmart = false);
+    }
   }
 
   String _summary(BuildContext context, Reminder reminder) {
@@ -48,10 +91,41 @@ class RemindersPage extends ConsumerWidget {
     };
   }
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget _permissionNotice(AsyncValue<bool> permission) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
+    return permission.when(
+      loading: () => const Padding(
+        padding: EdgeInsets.all(AppSpacing.md),
+        child: LinearProgressIndicator(minHeight: 3),
+      ),
+      error: (_, _) => _NoticeRow(
+        title: l10n.errorLoadFailed,
+        body: l10n.errorGeneric,
+        actionLabel: l10n.actionRetry,
+        onAction: () => ref.invalidate(notificationsEnabledProvider),
+      ),
+      data: (enabled) {
+        if (enabled && !_permissionDenied) return const SizedBox.shrink();
+        return _NoticeRow(
+          title: l10n.reminderNotificationsOff,
+          body: l10n.reminderBody,
+          errorBody: _permissionDenied ? l10n.errorGeneric : null,
+          actionLabel: _permissionDenied
+              ? l10n.actionRetry
+              : _requesting
+              ? l10n.statusLoading
+              : l10n.reminderAllow,
+          busy: _requesting,
+          onAction: _requestPermission,
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final colors = context.colors;
     final reminders = ref.watch(remindersProvider);
     final smart = ref.watch(smartReminderProvider);
     final permission = ref.watch(notificationsEnabledProvider);
@@ -77,96 +151,109 @@ class RemindersPage extends ConsumerWidget {
         icon: const Icon(Icons.add_alert_outlined),
         label: Text(l10n.reminderAdd),
         onPressed: () => _edit(
-          context,
           const Reminder(id: 0, title: '', hour: 18, minute: 0),
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(12, 8, 12, 96),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          AppSpacing.sm,
+          AppSpacing.md,
+          96,
+        ),
         children: [
-          if (permission.value == false)
-            Card(
-              elevation: 0,
-              color: theme.colorScheme.errorContainer,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: ListTile(
-                leading: Icon(
-                  Icons.notifications_off_outlined,
-                  color: theme.colorScheme.onErrorContainer,
-                ),
-                title: Text(
-                  l10n.reminderNotificationsOff,
-                  style: TextStyle(color: theme.colorScheme.onErrorContainer),
-                ),
-                trailing: FilledButton(
-                  onPressed: () async {
-                    await ref.read(reminderServiceProvider).requestPermission();
-                    ref.invalidate(notificationsEnabledProvider);
-                  },
-                  child: Text(l10n.reminderAllow),
-                ),
-              ),
-            ),
+          _permissionNotice(permission),
 
           // --- Smart reminder ------------------------------------------
-          Card(
-            elevation: 0,
-            color: theme.colorScheme.surfaceContainerLow,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(18),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(color: colors.outlineVariant),
+              ),
             ),
             child: Column(
               children: [
-                SwitchListTile(
-                  secondary: const Icon(Icons.auto_awesome),
-                  title: Text(l10n.reminderSmartSwitch),
-                  subtitle: Text(l10n.reminderSmartSubtitle),
-                  value: smart.enabled,
-                  onChanged: (value) async {
-                    await ref
-                        .read(smartReminderProvider.notifier)
-                        .update(smart.copyWith(enabled: value));
-                    if (value) {
-                      final service = ref.read(reminderServiceProvider);
-                      if (!await service.notificationsEnabled()) {
-                        await service.requestPermission();
-                        ref.invalidate(notificationsEnabledProvider);
-                      }
-                    }
-                  },
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                  child: Row(
+                    children: [
+                      Icon(Icons.auto_awesome, color: colors.primary),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.reminderSmartSwitch,
+                              style: AppTypography.bodyStrong,
+                            ),
+                            Text(
+                              l10n.reminderSmartSubtitle,
+                              style: AppTypography.caption.copyWith(
+                                color: colors.onSurfaceVariant,
+                              ),
+                            ),
+                            if (_savingSmart)
+                              Text(
+                                l10n.statusSaving,
+                                style: AppTypography.caption.copyWith(
+                                  color: colors.primary,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      Semantics(
+                        label: l10n.reminderSmartSwitch,
+                        value: smart.enabled
+                            ? l10n.statusEnabled
+                            : l10n.statusDisabled,
+                        child: Switch(
+                          value: smart.enabled,
+                          onChanged: _savingSmart
+                              ? null
+                              : (value) =>
+                                  unawaited(_updateSmart(smart.copyWith(enabled: value))),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 if (smart.enabled)
-                  ListTile(
-                    leading: const Icon(Icons.access_time),
-                    title: Text(l10n.reminderTime),
-                    trailing: Text(
-                      TimeOfDay(
-                        hour: smart.hour,
-                        minute: smart.minute,
-                      ).format(context),
-                      style: theme.textTheme.titleMedium,
-                    ),
-                    onTap: () async {
-                      final picked = await showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay(
+                  Semantics(
+                    button: true,
+                    label:
+                        '${l10n.reminderTime}, '
+                        '${TimeOfDay(hour: smart.hour, minute: smart.minute).format(context)}',
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: Icon(Icons.access_time, color: colors.primary),
+                      title: Text(l10n.reminderTime, style: AppTypography.body),
+                      trailing: Text(
+                        TimeOfDay(
                           hour: smart.hour,
                           minute: smart.minute,
-                        ),
-                      );
-                      if (picked != null) {
-                        await ref
-                            .read(smartReminderProvider.notifier)
-                            .update(
-                              smart.copyWith(
-                                hour: picked.hour,
-                                minute: picked.minute,
-                              ),
-                            );
-                      }
-                    },
+                        ).format(context),
+                        style: AppTypography.label,
+                      ),
+                      onTap: () async {
+                        final picked = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay(
+                            hour: smart.hour,
+                            minute: smart.minute,
+                          ),
+                        );
+                        if (picked != null) {
+                          await _updateSmart(
+                            smart.copyWith(
+                              hour: picked.hour,
+                              minute: picked.minute,
+                            ),
+                          );
+                        }
+                      },
+                    ),
                   ),
               ],
             ),
@@ -174,30 +261,41 @@ class RemindersPage extends ConsumerWidget {
 
           // --- Suggestions ---------------------------------------------
           Padding(
-            padding: const EdgeInsets.fromLTRB(4, 16, 4, 8),
+            padding: const EdgeInsets.fromLTRB(
+              0,
+              AppSpacing.lg,
+              0,
+              AppSpacing.sm,
+            ),
             child: Text(
               l10n.reminderSuggestedTitle,
-              style: theme.textTheme.titleMedium,
+              style: AppTypography.title,
             ),
           ),
           Wrap(
-            spacing: 8,
-            runSpacing: 8,
+            spacing: AppSpacing.touchTargetGap,
+            runSpacing: AppSpacing.touchTargetGap,
             children: [
               for (final suggestion in suggestions)
-                ActionChip(
-                  avatar: const Icon(Icons.add, size: 18),
-                  label: Text(
-                    '${suggestion.title} • '
-                    '${TimeOfDay(hour: suggestion.hour, minute: suggestion.minute).format(context)}',
-                  ),
-                  onPressed: () => _edit(
-                    context,
-                    Reminder(
-                      id: 0,
-                      title: suggestion.title,
-                      hour: suggestion.hour,
-                      minute: suggestion.minute,
+                Semantics(
+                  button: true,
+                  label:
+                      '${suggestion.title}, '
+                      '${TimeOfDay(hour: suggestion.hour, minute: suggestion.minute).format(context)}',
+                  child: ActionChip(
+                    avatar: const Icon(Icons.add, size: 20),
+                    label: Text(
+                      '${suggestion.title} • '
+                      '${TimeOfDay(hour: suggestion.hour, minute: suggestion.minute).format(context)}',
+                      style: AppTypography.caption,
+                    ),
+                    onPressed: () => _edit(
+                      Reminder(
+                        id: 0,
+                        title: suggestion.title,
+                        hour: suggestion.hour,
+                        minute: suggestion.minute,
+                      ),
                     ),
                   ),
                 ),
@@ -206,13 +304,32 @@ class RemindersPage extends ConsumerWidget {
 
           // --- My reminders --------------------------------------------
           Padding(
-            padding: const EdgeInsets.fromLTRB(4, 20, 4, 8),
-            child: Text(l10n.reminders, style: theme.textTheme.titleMedium),
+            padding: const EdgeInsets.fromLTRB(
+              0,
+              AppSpacing.lg,
+              0,
+              AppSpacing.sm,
+            ),
+            child: Text(l10n.reminders, style: AppTypography.title),
           ),
           if (sorted.isEmpty)
             Padding(
-              padding: const EdgeInsets.all(24),
-              child: Text(l10n.remindersEmpty, textAlign: TextAlign.center),
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.notifications_none,
+                    size: 32,
+                    color: colors.onSurfaceVariant,
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  Text(
+                    l10n.remindersEmpty,
+                    style: AppTypography.body,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
             ),
           for (final reminder in sorted)
             _ReminderCard(
@@ -228,7 +345,7 @@ class RemindersPage extends ConsumerWidget {
                     .read(remindersProvider.notifier)
                     .setEnabled(reminder.id, enabled: value),
               ),
-              onEdit: () => _edit(context, reminder),
+              onEdit: () => _edit(reminder),
               onDelete: () async {
                 if (await confirmDelete(
                   context,
@@ -240,6 +357,93 @@ class RemindersPage extends ConsumerWidget {
                 }
               },
             ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Permission and failure states use the same quiet shape: what happened, why
+/// it matters, and one accessible next step.
+class _NoticeRow extends StatelessWidget {
+  const _NoticeRow({
+    required this.title,
+    required this.body,
+    required this.actionLabel,
+    required this.onAction,
+    this.errorBody,
+    this.busy = false,
+  });
+
+  final String title;
+  final String body;
+  final String? errorBody;
+  final String actionLabel;
+  final VoidCallback onAction;
+  final bool busy;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final error = errorBody != null;
+    return Container(
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: error
+            ? colors.errorContainer
+            : colors.primaryContainer,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        border: Border.all(color: colors.outlineVariant),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            error ? Icons.error_outline : Icons.notifications_none,
+            color: error
+                ? colors.onErrorContainer
+                : colors.onPrimaryContainer,
+          ),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: AppTypography.bodyStrong.copyWith(
+                    color: error
+                        ? colors.onErrorContainer
+                        : colors.onPrimaryContainer,
+                  ),
+                ),
+                Text(
+                  body,
+                  style: AppTypography.caption.copyWith(
+                    color: error
+                        ? colors.onErrorContainer
+                        : colors.onPrimaryContainer,
+                  ),
+                ),
+                if (errorBody != null)
+                  Text(
+                    errorBody!,
+                    style: AppTypography.caption.copyWith(
+                      color: colors.onErrorContainer,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Semantics(
+            button: true,
+            label: actionLabel,
+            child: OutlinedButton(
+              onPressed: busy ? null : onAction,
+              child: Text(actionLabel),
+            ),
+          ),
         ],
       ),
     );
@@ -267,71 +471,92 @@ class _ReminderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final enabled = reminder.enabled;
-    final dim = enabled ? 1.0 : 0.5;
+    final colors = context.colors;
+    final title = reminder.title.isEmpty
+        ? l10n.reminderDefaultTitle
+        : reminder.title;
+    final time = TimeOfDay(
+      hour: reminder.hour,
+      minute: reminder.minute,
+    ).format(context);
 
-    return Card(
-      elevation: 0,
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      color: theme.colorScheme.surfaceContainerLow,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onEdit,
-        child: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 4, 12),
+    return Column(
+      children: [
+        ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: AppSpacing.minTouchTarget),
           child: Row(
             children: [
-              Opacity(
-                opacity: dim,
-                child: Text(
-                  TimeOfDay(
-                    hour: reminder.hour,
-                    minute: reminder.minute,
-                  ).format(context),
-                  style: theme.textTheme.headlineSmall,
-                ),
-              ),
-              const SizedBox(width: 16),
               Expanded(
-                child: Opacity(
-                  opacity: dim,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        reminder.title.isEmpty
-                            ? l10n.reminderDefaultTitle
-                            : reminder.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleSmall,
+                child: Semantics(
+                  button: true,
+                  label: '${l10n.actionEdit}: $title, $time',
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                    onTap: onEdit,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: AppSpacing.sm,
                       ),
-                      Text(summary, style: theme.textTheme.bodySmall),
-                      if (subjectName != null)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.link, size: 14),
-                              const SizedBox(width: 4),
-                              Flexible(
-                                child: Text(
-                                  subjectName!,
+                      child: Row(
+                        children: [
+                          Text(time, style: AppTypography.title),
+                          const SizedBox(width: AppSpacing.md),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  title,
+                                  maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.labelSmall,
+                                  style: AppTypography.body,
                                 ),
-                              ),
-                            ],
+                                Text(
+                                  summary,
+                                  style: AppTypography.caption.copyWith(
+                                    color: colors.onSurfaceVariant,
+                                  ),
+                                ),
+                                if (subjectName != null)
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.link,
+                                        size: 16,
+                                        color: colors.onSurfaceVariant,
+                                      ),
+                                      const SizedBox(width: AppSpacing.xs),
+                                      Flexible(
+                                        child: Text(
+                                          subjectName!,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: AppTypography.caption.copyWith(
+                                            color: colors.onSurfaceVariant,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                              ],
+                            ),
                           ),
-                        ),
-                    ],
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
-              Switch(value: enabled, onChanged: onToggle),
+              Semantics(
+                label: title,
+                value: reminder.enabled
+                    ? l10n.statusEnabled
+                    : l10n.statusDisabled,
+                child: Switch(
+                  value: reminder.enabled,
+                  onChanged: onToggle,
+                ),
+              ),
               PopupMenuButton<_ReminderMenu>(
                 tooltip: l10n.actionMore,
                 onSelected: (value) {
@@ -345,10 +570,12 @@ class _ReminderCard extends StatelessWidget {
                 itemBuilder: (_) => [
                   PopupMenuItem(
                     value: _ReminderMenu.edit,
+                    height: AppSpacing.minTouchTarget,
                     child: Text(l10n.actionEdit),
                   ),
                   PopupMenuItem(
                     value: _ReminderMenu.delete,
+                    height: AppSpacing.minTouchTarget,
                     child: Text(l10n.actionDelete),
                   ),
                 ],
@@ -356,7 +583,8 @@ class _ReminderCard extends StatelessWidget {
             ],
           ),
         ),
-      ),
+        Divider(height: 1, color: colors.outlineVariant),
+      ],
     );
   }
 }

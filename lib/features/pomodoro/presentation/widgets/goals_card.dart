@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/l10n/l10n_context.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../domain/entities/study_goal.dart';
 import '../controllers/goals_provider.dart';
 import '../sheets/goal_sheets.dart';
@@ -35,8 +38,6 @@ class GoalsCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final scheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
     final goals = ref.watch(goalsProvider);
     final now = DateTime.now();
 
@@ -63,29 +64,34 @@ class GoalsCard extends ConsumerWidget {
       height: 88,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          AppSpacing.sm,
+          AppSpacing.md,
+          0,
+        ),
         children: [
           for (final goal in sorted)
             Padding(
-              padding: const EdgeInsetsDirectional.only(end: 8),
+              padding: const EdgeInsetsDirectional.only(end: AppSpacing.sm),
               child: SizedBox(
                 width: 210,
                 child: Card(
                   margin: EdgeInsets.zero,
                   elevation: 0,
-                  color: scheme.primaryContainer,
+                  color: context.colors.primaryContainer,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                   ),
                   clipBehavior: Clip.antiAlias,
                   child: InkWell(
                     onTap: () => _open(context, goal),
                     child: Padding(
                       padding: const EdgeInsetsDirectional.fromSTEB(
-                        14,
-                        8,
-                        2,
-                        8,
+                        AppSpacing.md,
+                        AppSpacing.sm,
+                        AppSpacing.xs,
+                        AppSpacing.sm,
                       ),
                       child: Row(
                         children: [
@@ -98,18 +104,17 @@ class GoalsCard extends ConsumerWidget {
                                   goal.name,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: textTheme.titleSmall?.copyWith(
-                                    color: scheme.onPrimaryContainer,
-                                    fontWeight: FontWeight.w700,
+                                  style: AppTypography.bodyStrong.copyWith(
+                                    color: context.colors.onPrimaryContainer,
                                   ),
                                 ),
-                                const SizedBox(height: 2),
+                                const SizedBox(height: AppSpacing.xs),
                                 Text(
                                   headline(goal),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: textTheme.titleMedium?.copyWith(
-                                    color: scheme.onPrimaryContainer,
+                                  style: AppTypography.body.copyWith(
+                                    color: context.colors.onPrimaryContainer,
                                   ),
                                 ),
                               ],
@@ -117,7 +122,7 @@ class GoalsCard extends ConsumerWidget {
                           ),
                           IconButton(
                             tooltip: l10n.examEdit,
-                            color: scheme.onPrimaryContainer,
+                            color: context.colors.onPrimaryContainer,
                             icon: const Icon(Icons.edit_outlined, size: 20),
                             onPressed: () => _edit(context, goal: goal),
                           ),
@@ -133,9 +138,9 @@ class GoalsCard extends ConsumerWidget {
             child: Card(
               margin: EdgeInsets.zero,
               elevation: 0,
-              color: scheme.surfaceContainerHigh,
+              color: context.colors.surfaceContainerHigh,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
               ),
               clipBehavior: Clip.antiAlias,
               child: InkWell(
@@ -143,13 +148,17 @@ class GoalsCard extends ConsumerWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.flag_outlined),
-                    const SizedBox(width: 8),
+                    Icon(
+                      Icons.flag_outlined,
+                      color: context.colors.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
                     Flexible(
                       child: Text(
                         l10n.goalsAdd,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
+                        style: AppTypography.bodyStrong,
                       ),
                     ),
                   ],

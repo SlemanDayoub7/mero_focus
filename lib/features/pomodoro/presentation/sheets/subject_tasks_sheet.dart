@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/l10n/l10n_context.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../domain/entities/subject.dart';
 import '../../domain/entities/subtask.dart';
 import '../constants/subject_palette.dart';
@@ -63,10 +65,7 @@ class _SubjectTasksSheetState extends ConsumerState<SubjectTasksSheet> {
         content: TextField(
           controller: controller,
           autofocus: true,
-          decoration: InputDecoration(
-            hintText: l10n.subtaskNameHint,
-            border: const OutlineInputBorder(),
-          ),
+          decoration: InputDecoration(labelText: l10n.subtaskNameHint),
         ),
         actions: [
           TextButton(
@@ -105,7 +104,8 @@ class _SubjectTasksSheetState extends ConsumerState<SubjectTasksSheet> {
     ];
     final subjectTotals = ref.watch(subjectTotalsProvider);
     final subtaskTotals = ref.watch(subtaskTotalsProvider);
-    final total = (subjectId == null ? null : subjectTotals[subjectId]) ??
+    final total =
+        (subjectId == null ? null : subjectTotals[subjectId]) ??
         const FocusTotal();
 
     var subtaskTime = Duration.zero;
@@ -121,10 +121,10 @@ class _SubjectTasksSheetState extends ConsumerState<SubjectTasksSheet> {
     return SafeArea(
       child: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
-          16,
-          16,
-          16,
-          MediaQuery.of(context).viewInsets.bottom + 16,
+          AppSpacing.md,
+          AppSpacing.md,
+          AppSpacing.md,
+          MediaQuery.of(context).viewInsets.bottom + AppSpacing.md,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -132,22 +132,22 @@ class _SubjectTasksSheetState extends ConsumerState<SubjectTasksSheet> {
           children: [
             Row(
               children: [
-                CircleAvatar(radius: 8, backgroundColor: color),
-                const SizedBox(width: 10),
+                CircleAvatar(radius: 10, backgroundColor: color),
+                const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Text(subject.name, style: theme.textTheme.titleLarge),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.md),
             Card(
               elevation: 0,
-              color: color.withValues(alpha: 0.18),
+              color: context.colors.surfaceContainerHigh,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(AppSpacing.md),
                 child: Row(
                   children: [
                     Expanded(
@@ -156,7 +156,9 @@ class _SubjectTasksSheetState extends ConsumerState<SubjectTasksSheet> {
                         children: [
                           Text(
                             l10n.subtaskTotalAllTime,
-                            style: theme.textTheme.labelMedium,
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              color: context.colors.onSurfaceVariant,
+                            ),
                           ),
                           Text(
                             total.time.label(l10n),
@@ -167,13 +169,15 @@ class _SubjectTasksSheetState extends ConsumerState<SubjectTasksSheet> {
                     ),
                     Text(
                       l10n.subjectSessionsDone(total.sessions),
-                      style: theme.textTheme.bodyMedium,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: context.colors.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.layers_outlined),
@@ -228,7 +232,7 @@ class _SubjectTasksSheetState extends ConsumerState<SubjectTasksSheet> {
                   ],
                 ),
               ),
-            const Divider(height: 24),
+            const Divider(height: AppSpacing.lg),
             Row(
               children: [
                 Expanded(
@@ -236,14 +240,10 @@ class _SubjectTasksSheetState extends ConsumerState<SubjectTasksSheet> {
                     controller: _newName,
                     textInputAction: TextInputAction.done,
                     onSubmitted: (_) => unawaited(_addSubtask()),
-                    decoration: InputDecoration(
-                      hintText: l10n.subtaskAddHint,
-                      border: const OutlineInputBorder(),
-                      isDense: true,
-                    ),
+                    decoration: InputDecoration(labelText: l10n.subtaskAddHint),
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.sm),
                 IconButton.filled(
                   tooltip: l10n.actionAdd,
                   icon: const Icon(Icons.add),

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/l10n/l10n_context.dart';
 
-/// Asks "Delete <name>?" and returns true only when the user confirms.
+/// Asks for confirmation with the item's name and returns true only when the
+/// user explicitly confirms.
 /// Every delete in the app goes through this, so nothing is removed by an
 /// accidental tap.
 Future<bool> confirmDelete(BuildContext context, {required String name}) async {

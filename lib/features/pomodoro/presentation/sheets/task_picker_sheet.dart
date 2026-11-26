@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/l10n/l10n_context.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../domain/entities/task.dart';
 import '../../domain/stats/pomodoro_stats.dart';
 import '../controllers/planner_providers.dart';
@@ -24,33 +25,43 @@ class TaskPickerSheet extends ConsumerWidget {
 
     return Padding(
       padding: EdgeInsets.fromLTRB(
-        16,
-        16,
-        16,
-        MediaQuery.of(context).viewInsets.bottom + 16,
+        AppSpacing.md,
+        AppSpacing.md,
+        AppSpacing.md,
+        MediaQuery.of(context).viewInsets.bottom + AppSpacing.md,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(l10n.taskPick, style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 12),
-          AddTaskField(
-            due: startOfDay(DateTime.now()),
-            onAdded: select,
-          ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.md),
+          AddTaskField(due: startOfDay(DateTime.now()), onAdded: select),
+          const SizedBox(height: AppSpacing.sm),
           if (tasksAsync is! AsyncData<List<Task>>)
-            const LinearProgressIndicator(),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.statusLoading,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Semantics(
+                  label: l10n.statusLoading,
+                  child: const LinearProgressIndicator(),
+                ),
+              ],
+            ),
           if (tasksAsync is AsyncData<List<Task>>)
             Flexible(
               child: ListView(
                 shrinkWrap: true,
                 children: [
                   for (final task in tasksAsync.value.where(
-                        (task) =>
-                            !task.done && task.effectiveDue.isBefore(tomorrow),
-                      ))
+                    (task) =>
+                        !task.done && task.effectiveDue.isBefore(tomorrow),
+                  ))
                     ListTile(
                       title: Text(task.title),
                       onTap: () => select(task.id!),

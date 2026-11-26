@@ -14,7 +14,7 @@ class MeroFocusApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeModeProvider);
+    final accent = ref.watch(primaryAccentProvider);
     final locale = ref.watch(localeProvider);
 
     return MaterialApp(
@@ -23,9 +23,9 @@ class MeroFocusApp extends ConsumerWidget {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       locale: locale,
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
-      themeMode: themeMode,
+      theme: AppTheme.darkFor(accent),
+      darkTheme: AppTheme.darkFor(accent),
+      themeMode: ThemeMode.dark,
       routes: AppRouter.routes,
       home: const BackgroundSessionCoordinator(child: HomeShellPage()),
     );

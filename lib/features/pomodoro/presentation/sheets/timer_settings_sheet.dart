@@ -4,14 +4,40 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/l10n/l10n_context.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../domain/entities/planner_preferences.dart';
 import '../../domain/entities/session_type.dart';
 import '../controllers/planner_actions.dart';
-import '../../data/services/audio_white_noise.dart';
 import '../controllers/planner_providers.dart';
 import '../controllers/timer_extras_settings.dart';
 import '../formatting/duration_labels.dart';
 import '../widgets/minutes_picker_dialog.dart';
+
+/// Runs a settings write and reports failures in plain language with a retry
+/// action, instead of letting an `unawaited` future fail silently.
+Future<void> _runWithFeedback(
+  BuildContext context,
+  Future<void> Function() action,
+) async {
+  try {
+    await action();
+  } catch (error, stackTrace) {
+    debugPrint('Timer settings action failed: $error\n$stackTrace');
+    if (!context.mounted) return;
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    if (messenger == null) return;
+    final l10n = context.l10n;
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(l10n.errorGeneric),
+        action: SnackBarAction(
+          label: l10n.actionRetry,
+          onPressed: () => unawaited(_runWithFeedback(context, action)),
+        ),
+      ),
+    );
+  }
+}
 
 /// Opens the wheel picker for one phase and stores the result. The timer
 /// controller listens to the preferences stream and refreshes the idle
@@ -22,28 +48,30 @@ Future<void> editPhaseDuration(
   SessionType phase,
   String label,
 ) async {
-  final prefs = await ref.read(plannerPreferencesProvider.future);
-  if (!context.mounted) return;
+  await _runWithFeedback(context, () async {
+    final prefs = await ref.read(plannerPreferencesProvider.future);
+    if (!context.mounted) return;
 
-  final current = switch (phase) {
-    SessionType.work => prefs.focusDuration,
-    SessionType.shortBreak => prefs.shortBreakDuration,
-    SessionType.longBreak => prefs.longBreakDuration,
-  };
-  final minutes = await showMinutesPicker(
-    context,
-    title: label,
-    initialMinutes: current.inMinutes,
-  );
-  if (minutes == null) return;
+    final current = switch (phase) {
+      SessionType.work => prefs.focusDuration,
+      SessionType.shortBreak => prefs.shortBreakDuration,
+      SessionType.longBreak => prefs.longBreakDuration,
+    };
+    final minutes = await showMinutesPicker(
+      context,
+      title: label,
+      initialMinutes: current.inMinutes,
+    );
+    if (minutes == null || !context.mounted) return;
 
-  final duration = Duration(minutes: minutes);
-  final next = switch (phase) {
-    SessionType.work => prefs.copyWith(focusDuration: duration),
-    SessionType.shortBreak => prefs.copyWith(shortBreakDuration: duration),
-    SessionType.longBreak => prefs.copyWith(longBreakDuration: duration),
-  };
-  await ref.read(plannerActionsProvider).savePreferences(next);
+    final duration = Duration(minutes: minutes);
+    final next = switch (phase) {
+      SessionType.work => prefs.copyWith(focusDuration: duration),
+      SessionType.shortBreak => prefs.copyWith(shortBreakDuration: duration),
+      SessionType.longBreak => prefs.copyWith(longBreakDuration: duration),
+    };
+    await ref.read(plannerActionsProvider).savePreferences(next);
+  });
 }
 
 /// Timer settings: focus / short break / long break durations and how many
@@ -59,9 +87,19 @@ class TimerSettingsSheet extends ConsumerWidget {
     final prefsAsync = ref.watch(plannerPreferencesProvider);
 
     if (prefsAsync is! AsyncData<PlannerPreferences>) {
-      return const Padding(
-        padding: EdgeInsets.all(32),
-        child: Center(child: CircularProgressIndicator()),
+      return Padding(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CircularProgressIndicator(),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              l10n.statusLoading,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ],
+        ),
       );
     }
     final prefs = prefsAsync.value;
@@ -69,7 +107,7 @@ class TimerSettingsSheet extends ConsumerWidget {
     Widget durationTile(SessionType phase, String label, Duration value) {
       return ListTile(
         contentPadding: EdgeInsets.zero,
-        title: Text(label),
+        title: Text(label, style: Theme.of(context).textTheme.bodyLarge),
         trailing: Text(
           value.labelOf(context),
           style: Theme.of(context).textTheme.titleMedium,
@@ -80,15 +118,21 @@ class TimerSettingsSheet extends ConsumerWidget {
 
     void setRounds(int value) {
       unawaited(
-        ref
-            .read(plannerActionsProvider)
-            .savePreferences(prefs.copyWith(roundsBeforeLongBreak: value)),
+        _runWithFeedback(
+          context,
+          () => ref
+              .read(plannerActionsProvider)
+              .savePreferences(prefs.copyWith(roundsBeforeLongBreak: value)),
+        ),
       );
     }
 
+    final fewerRounds = prefs.roundsBeforeLongBreak - 1;
+    final moreRounds = prefs.roundsBeforeLongBreak + 1;
+
     return SafeArea(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -97,8 +141,12 @@ class TimerSettingsSheet extends ConsumerWidget {
               l10n.timerSettings,
               style: Theme.of(context).textTheme.titleLarge,
             ),
-            const SizedBox(height: 8),
-            durationTile(SessionType.work, l10n.pomodoroWork, prefs.focusDuration),
+            const SizedBox(height: AppSpacing.sm),
+            durationTile(
+              SessionType.work,
+              l10n.pomodoroWork,
+              prefs.focusDuration,
+            ),
             durationTile(
               SessionType.shortBreak,
               l10n.pomodoroShortBreak,
@@ -111,11 +159,19 @@ class TimerSettingsSheet extends ConsumerWidget {
             ),
             Row(
               children: [
-                Expanded(child: Text(l10n.timerLongBreakEvery)),
+                Expanded(
+                  child: Text(
+                    l10n.timerLongBreakEvery,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ),
                 IconButton(
+                  // The target value is a meaningful, localised label for
+                  // the icon-only control.
+                  tooltip: '${l10n.timerLongBreakEvery}: $fewerRounds',
                   icon: const Icon(Icons.remove_circle_outline),
                   onPressed: prefs.roundsBeforeLongBreak > 1
-                      ? () => setRounds(prefs.roundsBeforeLongBreak - 1)
+                      ? () => setRounds(fewerRounds)
                       : null,
                 ),
                 Text(
@@ -123,17 +179,16 @@ class TimerSettingsSheet extends ConsumerWidget {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 IconButton(
+                  tooltip: '${l10n.timerLongBreakEvery}: $moreRounds',
                   icon: const Icon(Icons.add_circle_outline),
                   onPressed: prefs.roundsBeforeLongBreak < _maxRounds
-                      ? () => setRounds(prefs.roundsBeforeLongBreak + 1)
+                      ? () => setRounds(moreRounds)
                       : null,
                 ),
               ],
             ),
-            const Divider(height: 32),
-            _SoundSection(prefs: prefs),
-            const Divider(height: 32),
-            const _BackgroundSection(),
+            const Divider(height: AppSpacing.xl),
+            const _EndSoundSwitch(),
           ],
         ),
       ),
@@ -141,124 +196,27 @@ class TimerSettingsSheet extends ConsumerWidget {
   }
 }
 
-/// Ambient sound choice + the end-of-timer sound switch.
-class _SoundSection extends ConsumerWidget {
-  const _SoundSection({required this.prefs});
-
-  final PlannerPreferences prefs;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = context.l10n;
-    final extras = ref.watch(timerExtrasProvider);
-
-    String nameOf(String id) => switch (id) {
-      AmbientSounds.white => l10n.soundWhite,
-      AmbientSounds.pink => l10n.soundPink,
-      _ => l10n.soundBrown,
-    };
-
-    void select(String? id) {
-      final next = id == null
-          ? prefs.copyWith(clearWhiteNoiseSoundId: true)
-          : prefs.copyWith(whiteNoiseSoundId: id);
-      unawaited(ref.read(plannerActionsProvider).savePreferences(next));
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          l10n.settingsSoundSection,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          children: [
-            ChoiceChip(
-              label: Text(l10n.soundNone),
-              selected: prefs.whiteNoiseSoundId == null,
-              onSelected: (_) => select(null),
-            ),
-            for (final id in AmbientSounds.all)
-              ChoiceChip(
-                label: Text(nameOf(id)),
-                selected: prefs.whiteNoiseSoundId == id,
-                onSelected: (_) => select(id),
-              ),
-          ],
-        ),
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(l10n.soundEndTimer),
-          value: extras.endSoundEnabled,
-          onChanged: (value) => unawaited(
-            ref.read(timerExtrasProvider.notifier).setEndSoundEnabled(value),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-/// Gallery background for the timer (and optionally the tasks screen).
-class _BackgroundSection extends ConsumerWidget {
-  const _BackgroundSection();
+/// Only the timer-specific sound switch stays here; ambience and background
+/// are chosen from Settings.
+class _EndSoundSwitch extends ConsumerWidget {
+  const _EndSoundSwitch();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final extras = ref.watch(timerExtrasProvider);
-    final notifier = ref.read(timerExtrasProvider.notifier);
-    final hasImage = extras.backgroundPath != null;
+    final enabled = ref.watch(timerExtrasProvider).endSoundEnabled;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          l10n.settingsBackgroundSection,
-          style: Theme.of(context).textTheme.titleMedium,
+    return SwitchListTile(
+      contentPadding: EdgeInsets.zero,
+      title: Text(l10n.soundEndTimer),
+      value: enabled,
+      onChanged: (value) => unawaited(
+        _runWithFeedback(
+          context,
+          () =>
+              ref.read(timerExtrasProvider.notifier).setEndSoundEnabled(value),
         ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                icon: const Icon(Icons.photo_library_outlined),
-                label: Text(l10n.backgroundPick),
-                onPressed: () => unawaited(notifier.pickBackground()),
-              ),
-            ),
-            if (hasImage) ...[
-              const SizedBox(width: 8),
-              IconButton(
-                tooltip: l10n.backgroundRemove,
-                icon: const Icon(Icons.delete_outline),
-                onPressed: () => unawaited(notifier.clearBackground()),
-              ),
-            ],
-          ],
-        ),
-        if (hasImage) ...[
-          const SizedBox(height: 8),
-          SegmentedButton<BackgroundScope>(
-            segments: [
-              ButtonSegment(
-                value: BackgroundScope.timerOnly,
-                label: Text(l10n.backgroundTimerOnly),
-              ),
-              ButtonSegment(
-                value: BackgroundScope.timerAndTasks,
-                label: Text(l10n.backgroundTimerAndTasks),
-              ),
-            ],
-            selected: {extras.scope},
-            onSelectionChanged: (selection) =>
-                unawaited(notifier.setScope(selection.first)),
-          ),
-        ],
-      ],
+      ),
     );
   }
 }

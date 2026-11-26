@@ -149,6 +149,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tasksRemainingCount => 'Remaining tasks';
 
   @override
+  String get tasksRemainingTime => 'Time remaining';
+
+  @override
+  String get tasksToDoCount => 'Tasks to do';
+
+  @override
   String get tasksElapsedTime => 'Time spent';
 
   @override
@@ -367,6 +373,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get soundBrown => 'Brown noise';
+
+  @override
+  String get soundRain => 'Rain';
+
+  @override
+  String get soundSea => 'Sea';
+
+  @override
+  String get soundForest => 'Forest';
+
+  @override
+  String get soundBirds => 'Birds';
+
+  @override
+  String get soundCafe => 'Cafe';
 
   @override
   String get soundEndTimer => 'Sound at the end of the timer';
@@ -618,4 +639,121 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get weekday7 => 'Sun';
+
+  @override
+  String get actionRetry => 'Try again';
+
+  @override
+  String get statusLoading => 'Loading…';
+
+  @override
+  String get statusSaving => 'Saving…';
+
+  @override
+  String get statusOffline =>
+      'No connection. Your work stays saved on this device.';
+
+  @override
+  String get errorGeneric => 'Something went wrong. Please try again.';
+
+  @override
+  String get errorLoadFailed => 'We couldn\'t load this screen.';
+
+  @override
+  String get comingSoonTitle => 'Coming soon';
+
+  @override
+  String get comingSoonBody =>
+      'This section is still being built. Your timer and task data are ready to use now.';
+
+  @override
+  String get focusPrimaryHint =>
+      'Start when you\'re ready. The timer keeps running in the background.';
+
+  @override
+  String get accentSection => 'Primary colour';
+
+  @override
+  String get accentHint => 'Used for buttons, progress and selected items.';
+
+  @override
+  String get accentRoyal => 'Royal blue';
+
+  @override
+  String get accentViolet => 'Violet';
+
+  @override
+  String get accentCrimson => 'Crimson';
+
+  @override
+  String get accentAmber => 'Amber';
+
+  @override
+  String get accentEmerald => 'Emerald';
+
+  @override
+  String get accentMagenta => 'Magenta';
+
+  @override
+  String get accentIndigo => 'Indigo';
+
+  @override
+  String get accentOlive => 'Olive';
+
+  @override
+  String get accentTeal => 'Teal';
+
+  @override
+  String get accentCyan => 'Cyan';
+
+  @override
+  String get accentOrange => 'Orange';
+
+  @override
+  String get accentRose => 'Rose';
+
+  @override
+  String get accentGrass => 'Grass';
+
+  @override
+  String get accentPlum => 'Plum';
+
+  @override
+  String get accentSlate => 'Slate';
+
+  @override
+  String get accentCopper => 'Copper';
+
+  @override
+  String get settingsBackgroundReady => 'Ready backgrounds';
+
+  @override
+  String get backgroundDawn => 'Dawn mist';
+
+  @override
+  String get backgroundOcean => 'Ocean calm';
+
+  @override
+  String get backgroundForest => 'Forest shade';
+
+  @override
+  String get backgroundRose => 'Rose quartz';
+
+  @override
+  String get backgroundSlate => 'Slate sky';
+
+  @override
+  String get backgroundSand => 'Sand dune';
+
+  @override
+  String get backgroundAurora => 'Aurora';
+
+  @override
+  String get backgroundNebula => 'Nebula';
+
+  @override
+  String get backgroundReset => 'Reset to default';
+
+  @override
+  String get backgroundCustom => 'From gallery';
 }

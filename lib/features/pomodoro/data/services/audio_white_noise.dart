@@ -7,8 +7,22 @@ abstract final class AmbientSounds {
   static const String white = 'white_noise';
   static const String pink = 'pink_noise';
   static const String brown = 'brown_noise';
+  static const String rain = 'rain';
+  static const String sea = 'sea';
+  static const String forest = 'forest';
+  static const String birds = 'birds';
+  static const String cafe = 'cafe';
 
-  static const List<String> all = <String>[white, pink, brown];
+  static const List<String> all = <String>[
+    white,
+    pink,
+    brown,
+    rain,
+    sea,
+    forest,
+    birds,
+    cafe,
+  ];
 
   /// Asset path relative to `assets/` (audioplayers' AssetSource root).
   static String? assetFor(String id) {
@@ -16,6 +30,11 @@ abstract final class AmbientSounds {
       white => 'sounds/white_noise.wav',
       pink => 'sounds/pink_noise.wav',
       brown => 'sounds/brown_noise.wav',
+      rain => 'sounds/rain.wav',
+      sea => 'sounds/sea.wav',
+      forest => 'sounds/forest.wav',
+      birds => 'sounds/birds.wav',
+      cafe => 'sounds/cafe.wav',
       _ => null,
     };
   }

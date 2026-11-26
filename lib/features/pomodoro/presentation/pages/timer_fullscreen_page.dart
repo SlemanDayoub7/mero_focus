@@ -3,13 +3,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mero_focus/core/widgets/app_scaffold.dart';
+import 'package:mero_focus/features/pomodoro/presentation/widgets/app_background.dart';
 
 import '../../../../core/l10n/l10n_context.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../domain/entities/session_type.dart';
 import '../controllers/planner_providers.dart';
 import '../controllers/pomodoro_timer_controller.dart';
 import '../controllers/timer_actions.dart';
-import '../widgets/app_background.dart';
 import '../widgets/pomodoro_timer_display.dart';
 
 /// Immersive full-screen timer: system bars hidden, large countdown, only the
@@ -26,7 +28,9 @@ class _TimerFullscreenPageState extends ConsumerState<TimerFullscreenPage> {
   @override
   void initState() {
     super.initState();
-    unawaited(SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky));
+    unawaited(
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky),
+    );
   }
 
   @override
@@ -57,67 +61,73 @@ class _TimerFullscreenPageState extends ConsumerState<TimerFullscreenPage> {
     final secondaryLabel = actions.secondaryLabel;
     final onSecondary = actions.onSecondary;
 
-    return Scaffold(
+    return AppScaffold(
+      transparentBackground: true,
+      // Immersive mode: SafeArea's top inset was leaving a black strip.
+      applySafeArea: false,
+      appBar: null,
       body: AppBackground(
         target: BackgroundTarget.timer,
-        child: SafeArea(
-          child: Stack(
-            children: [
-              Align(
-                alignment: AlignmentDirectional.topEnd,
-                child: IconButton(
-                  tooltip: l10n.timerExitFullscreen,
-                  icon: const Icon(Icons.fullscreen_exit),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
+        child: Stack(
+          children: [
+            Align(
+              alignment: AlignmentDirectional.topEnd,
+              child: IconButton(
+                tooltip: l10n.timerExitFullscreen,
+                icon: const Icon(Icons.fullscreen_exit),
+                onPressed: () => Navigator.of(context).pop(),
               ),
-              Center(
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        phaseLabel,
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      if (activeTask != null)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: Text(
-                            activeTask.title,
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
+            ),
+            Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.xl,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      phaseLabel,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    if (activeTask != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: AppSpacing.xs),
+                        child: Text(
+                          activeTask.title,
+                          style: Theme.of(context).textTheme.bodyMedium,
                         ),
-                      const SizedBox(height: 24),
-                      PomodoroTimerDisplay(snapshot: snapshot, size: 320),
-                      const SizedBox(height: 32),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          FilledButton.icon(
-                            style: FilledButton.styleFrom(
-                              minimumSize: const Size(0, 56),
-                              shape: const StadiumBorder(),
-                            ),
-                            icon: Icon(actions.primaryIcon),
-                            label: Text(actions.primaryLabel),
-                            onPressed: actions.onPrimary,
-                          ),
-                          if (secondaryLabel != null && onSecondary != null) ...[
-                            const SizedBox(width: 12),
-                            OutlinedButton(
-                              onPressed: onSecondary,
-                              child: Text(secondaryLabel),
-                            ),
-                          ],
-                        ],
                       ),
-                    ],
-                  ),
+                    const SizedBox(height: AppSpacing.md),
+                    PomodoroTimerDisplay(snapshot: snapshot, size: 280),
+                    const SizedBox(height: AppSpacing.lg),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Theme supplies the accessible 48 dp minimum and
+                        // the filled style, so this stays the only primary
+                        // action on screen.
+                        FilledButton.icon(
+                          icon: Icon(actions.primaryIcon),
+                          label: Text(actions.primaryLabel),
+                          onPressed: actions.onPrimary,
+                        ),
+                        if (secondaryLabel != null && onSecondary != null) ...[
+                          const SizedBox(height: AppSpacing.touchTargetGap),
+                          OutlinedButton(
+                            onPressed: onSecondary,
+                            child: Text(secondaryLabel),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

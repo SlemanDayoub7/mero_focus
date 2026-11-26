@@ -368,6 +368,18 @@ abstract class AppLocalizations {
   /// **'Remaining tasks'**
   String get tasksRemainingCount;
 
+  /// No description provided for @tasksRemainingTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Time remaining'**
+  String get tasksRemainingTime;
+
+  /// No description provided for @tasksToDoCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks to do'**
+  String get tasksToDoCount;
+
   /// No description provided for @tasksElapsedTime.
   ///
   /// In en, this message translates to:
@@ -775,6 +787,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Brown noise'**
   String get soundBrown;
+
+  /// No description provided for @soundRain.
+  ///
+  /// In en, this message translates to:
+  /// **'Rain'**
+  String get soundRain;
+
+  /// No description provided for @soundSea.
+  ///
+  /// In en, this message translates to:
+  /// **'Sea'**
+  String get soundSea;
+
+  /// No description provided for @soundForest.
+  ///
+  /// In en, this message translates to:
+  /// **'Forest'**
+  String get soundForest;
+
+  /// No description provided for @soundBirds.
+  ///
+  /// In en, this message translates to:
+  /// **'Birds'**
+  String get soundBirds;
+
+  /// No description provided for @soundCafe.
+  ///
+  /// In en, this message translates to:
+  /// **'Cafe'**
+  String get soundCafe;
 
   /// No description provided for @soundEndTimer.
   ///
@@ -1237,6 +1279,234 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sun'**
   String get weekday7;
+
+  /// No description provided for @actionRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get actionRetry;
+
+  /// No description provided for @statusLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading…'**
+  String get statusLoading;
+
+  /// No description provided for @statusSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving…'**
+  String get statusSaving;
+
+  /// No description provided for @statusOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'No connection. Your work stays saved on this device.'**
+  String get statusOffline;
+
+  /// No description provided for @errorGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get errorGeneric;
+
+  /// No description provided for @errorLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load this screen.'**
+  String get errorLoadFailed;
+
+  /// No description provided for @comingSoonTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get comingSoonTitle;
+
+  /// No description provided for @comingSoonBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This section is still being built. Your timer and task data are ready to use now.'**
+  String get comingSoonBody;
+
+  /// No description provided for @focusPrimaryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Start when you\'re ready. The timer keeps running in the background.'**
+  String get focusPrimaryHint;
+
+  /// No description provided for @accentSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary colour'**
+  String get accentSection;
+
+  /// No description provided for @accentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Used for buttons, progress and selected items.'**
+  String get accentHint;
+
+  /// No description provided for @accentRoyal.
+  ///
+  /// In en, this message translates to:
+  /// **'Royal blue'**
+  String get accentRoyal;
+
+  /// No description provided for @accentViolet.
+  ///
+  /// In en, this message translates to:
+  /// **'Violet'**
+  String get accentViolet;
+
+  /// No description provided for @accentCrimson.
+  ///
+  /// In en, this message translates to:
+  /// **'Crimson'**
+  String get accentCrimson;
+
+  /// No description provided for @accentAmber.
+  ///
+  /// In en, this message translates to:
+  /// **'Amber'**
+  String get accentAmber;
+
+  /// No description provided for @accentEmerald.
+  ///
+  /// In en, this message translates to:
+  /// **'Emerald'**
+  String get accentEmerald;
+
+  /// No description provided for @accentMagenta.
+  ///
+  /// In en, this message translates to:
+  /// **'Magenta'**
+  String get accentMagenta;
+
+  /// No description provided for @accentIndigo.
+  ///
+  /// In en, this message translates to:
+  /// **'Indigo'**
+  String get accentIndigo;
+
+  /// No description provided for @accentOlive.
+  ///
+  /// In en, this message translates to:
+  /// **'Olive'**
+  String get accentOlive;
+
+  /// No description provided for @accentTeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Teal'**
+  String get accentTeal;
+
+  /// No description provided for @accentCyan.
+  ///
+  /// In en, this message translates to:
+  /// **'Cyan'**
+  String get accentCyan;
+
+  /// No description provided for @accentOrange.
+  ///
+  /// In en, this message translates to:
+  /// **'Orange'**
+  String get accentOrange;
+
+  /// No description provided for @accentRose.
+  ///
+  /// In en, this message translates to:
+  /// **'Rose'**
+  String get accentRose;
+
+  /// No description provided for @accentGrass.
+  ///
+  /// In en, this message translates to:
+  /// **'Grass'**
+  String get accentGrass;
+
+  /// No description provided for @accentPlum.
+  ///
+  /// In en, this message translates to:
+  /// **'Plum'**
+  String get accentPlum;
+
+  /// No description provided for @accentSlate.
+  ///
+  /// In en, this message translates to:
+  /// **'Slate'**
+  String get accentSlate;
+
+  /// No description provided for @accentCopper.
+  ///
+  /// In en, this message translates to:
+  /// **'Copper'**
+  String get accentCopper;
+
+  /// No description provided for @settingsBackgroundReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready backgrounds'**
+  String get settingsBackgroundReady;
+
+  /// No description provided for @backgroundDawn.
+  ///
+  /// In en, this message translates to:
+  /// **'Dawn mist'**
+  String get backgroundDawn;
+
+  /// No description provided for @backgroundOcean.
+  ///
+  /// In en, this message translates to:
+  /// **'Ocean calm'**
+  String get backgroundOcean;
+
+  /// No description provided for @backgroundForest.
+  ///
+  /// In en, this message translates to:
+  /// **'Forest shade'**
+  String get backgroundForest;
+
+  /// No description provided for @backgroundRose.
+  ///
+  /// In en, this message translates to:
+  /// **'Rose quartz'**
+  String get backgroundRose;
+
+  /// No description provided for @backgroundSlate.
+  ///
+  /// In en, this message translates to:
+  /// **'Slate sky'**
+  String get backgroundSlate;
+
+  /// No description provided for @backgroundSand.
+  ///
+  /// In en, this message translates to:
+  /// **'Sand dune'**
+  String get backgroundSand;
+
+  /// No description provided for @backgroundAurora.
+  ///
+  /// In en, this message translates to:
+  /// **'Aurora'**
+  String get backgroundAurora;
+
+  /// No description provided for @backgroundNebula.
+  ///
+  /// In en, this message translates to:
+  /// **'Nebula'**
+  String get backgroundNebula;
+
+  /// No description provided for @backgroundReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset to default'**
+  String get backgroundReset;
+
+  /// No description provided for @backgroundCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'From gallery'**
+  String get backgroundCustom;
 }
 
 class _AppLocalizationsDelegate

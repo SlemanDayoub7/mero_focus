@@ -3,7 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/l10n/l10n_context.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../domain/entities/study_goal.dart';
 import '../controllers/goals_provider.dart';
 import '../widgets/confirm_delete_dialog.dart';
@@ -28,6 +31,7 @@ class _GoalEditSheetState extends ConsumerState<GoalEditSheet> {
     text: widget.initial?.name ?? '',
   );
   late DateTime? _date = widget.initial?.date;
+  bool _saving = false;
 
   @override
   void dispose() {
@@ -48,20 +52,42 @@ class _GoalEditSheetState extends ConsumerState<GoalEditSheet> {
 
   Future<void> _save() async {
     final name = _name.text.trim();
-    if (name.isEmpty) return;
+    if (name.isEmpty || _saving) return;
     final notifier = ref.read(goalsProvider.notifier);
     final initial = widget.initial;
-    await notifier.save(
-      StudyGoal(id: initial?.id ?? notifier.newId(), name: name, date: _date),
-    );
-    if (mounted) Navigator.of(context).pop();
+
+    setState(() => _saving = true);
+    try {
+      await notifier.save(
+        StudyGoal(id: initial?.id ?? notifier.newId(), name: name, date: _date),
+      );
+      if (mounted) Navigator.of(context).pop();
+    } catch (_) {
+      if (mounted) {
+        setState(() => _saving = false);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(context.l10n.errorGeneric)));
+      }
+    }
   }
 
   Future<void> _remove() async {
     final initial = widget.initial;
     if (initial != null) {
       if (!await confirmDelete(context, name: initial.name)) return;
-      await ref.read(goalsProvider.notifier).remove(initial.id);
+      setState(() => _saving = true);
+      try {
+        await ref.read(goalsProvider.notifier).remove(initial.id);
+      } catch (_) {
+        if (mounted) {
+          setState(() => _saving = false);
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(context.l10n.errorGeneric)));
+          return;
+        }
+      }
     }
     if (mounted) Navigator.of(context).pop();
   }
@@ -73,10 +99,10 @@ class _GoalEditSheetState extends ConsumerState<GoalEditSheet> {
 
     return SingleChildScrollView(
       padding: EdgeInsets.fromLTRB(
-        16,
-        16,
-        16,
-        MediaQuery.of(context).viewInsets.bottom + 16,
+        AppSpacing.md,
+        AppSpacing.md,
+        AppSpacing.md,
+        MediaQuery.of(context).viewInsets.bottom + AppSpacing.md,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -90,15 +116,16 @@ class _GoalEditSheetState extends ConsumerState<GoalEditSheet> {
             decoration: InputDecoration(
               labelText: l10n.goalNameLabel,
               hintText: l10n.goalNameHint,
-              border: const OutlineInputBorder(),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.md),
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: const Icon(Icons.event),
             title: Text(l10n.goalDateLabel),
-            subtitle: Text(_date == null ? l10n.goalNoDate : _dateLabel(_date!)),
+            subtitle: Text(
+              _date == null ? l10n.goalNoDate : _dateLabel(_date!),
+            ),
             trailing: _date == null
                 ? null
                 : IconButton(
@@ -108,19 +135,25 @@ class _GoalEditSheetState extends ConsumerState<GoalEditSheet> {
                   ),
             onTap: () => unawaited(_pickDate()),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           Row(
             children: [
               if (widget.initial != null)
-                TextButton.icon(
-                  onPressed: () => unawaited(_remove()),
+                OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: context.colors.error,
+                    side: BorderSide(color: context.colors.error),
+                  ),
+                  onPressed: _saving ? null : () => unawaited(_remove()),
                   icon: const Icon(Icons.delete_outline),
                   label: Text(l10n.examRemove),
                 ),
               const Spacer(),
               FilledButton(
-                onPressed: canSave ? () => unawaited(_save()) : null,
-                child: Text(l10n.actionSave),
+                onPressed: canSave && !_saving
+                    ? () => unawaited(_save())
+                    : null,
+                child: Text(_saving ? l10n.statusSaving : l10n.actionSave),
               ),
             ],
           ),
@@ -140,40 +173,43 @@ class GoalPlanSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
     final now = DateTime.now();
     final days = goal.daysLeft(now) ?? 0;
     final date = goal.date;
 
     return SafeArea(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(goal.name, style: theme.textTheme.titleLarge),
-            const SizedBox(height: 4),
+            Text(goal.name, style: context.textStyles.titleLarge),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               '${l10n.examDaysLeft(days < 0 ? 0 : days)}'
               '${date == null ? '' : ' • ${_dateLabel(date)}'}',
-              style: theme.textTheme.bodyMedium,
+              style: context.textStyles.bodyMedium,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             if (days <= 0)
-              Text(l10n.examPlanNoDays)
+              Text(l10n.examPlanNoDays, style: context.textStyles.bodyMedium)
             else ...[
-              Text(l10n.examPlanIntro),
-              const SizedBox(height: 8),
+              Text(l10n.examPlanIntro, style: context.textStyles.bodyMedium),
+              const SizedBox(height: AppSpacing.sm),
               for (final hours in kGoalPlanHours)
                 Card(
                   elevation: 0,
-                  color: theme.colorScheme.surfaceContainerHigh,
+                  color: context.colors.surfaceContainerHigh,
                   child: ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: theme.colorScheme.primaryContainer,
-                      foregroundColor: theme.colorScheme.onPrimaryContainer,
-                      child: Text('$hours'),
+                      backgroundColor: context.colors.primaryContainer,
+                      child: Text(
+                        '$hours',
+                        style: AppTypography.bodyStrong.copyWith(
+                          color: context.colors.onPrimaryContainer,
+                        ),
+                      ),
                     ),
                     title: Text(l10n.examPlanPerDay(hours)),
                     subtitle: Text(
@@ -181,10 +217,10 @@ class GoalPlanSheet extends StatelessWidget {
                     ),
                   ),
                 ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               Text(
                 l10n.examPlanMotivation,
-                style: theme.textTheme.bodyMedium?.copyWith(
+                style: context.textStyles.bodyMedium?.copyWith(
                   fontStyle: FontStyle.italic,
                 ),
               ),

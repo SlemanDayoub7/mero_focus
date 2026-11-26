@@ -38,6 +38,30 @@ Future<void> _beginFocus(WidgetRef ref) async {
   if (canStart) controller.start();
 }
 
+/// A tap must be acknowledged immediately, even when preferences are still
+/// loading. The dialog is localised and dismissed as soon as [work] finishes.
+Future<T> _withLoading<T>(
+  BuildContext context,
+  Future<T> Function() work,
+) async {
+  final navigator = Navigator.of(context, rootNavigator: true);
+  final loading = showDialog<void>(
+    context: context,
+    barrierDismissible: false,
+    builder: (_) => const PopScope<void>(
+      canPop: false,
+      child: AlertDialog(content: CircularProgressIndicator()),
+    ),
+  );
+
+  try {
+    return await work();
+  } finally {
+    if (navigator.canPop()) navigator.pop();
+    await loading;
+  }
+}
+
 /// Opens the Pomodoro screen on [navigator].
 Future<void> pushTimerPage(NavigatorState navigator) {
   return navigator.push<void>(
@@ -76,7 +100,11 @@ Future<void> startFocusOnTask(
   int taskId, {
   String? subtaskId,
 }) async {
-  await prepareFocusOnTask(ref, taskId, subtaskId: subtaskId);
+  if (!context.mounted) return;
+  await _withLoading(
+    context,
+    () => prepareFocusOnTask(ref, taskId, subtaskId: subtaskId),
+  );
   if (!context.mounted) return;
   await pushTimerPage(Navigator.of(context));
 }
@@ -88,7 +116,11 @@ Future<void> startFocusForSubject(
   Subject subject, {
   String? subtaskId,
 }) async {
-  await prepareFocusForSubject(ref, subject, subtaskId: subtaskId);
+  if (!context.mounted) return;
+  await _withLoading(
+    context,
+    () => prepareFocusForSubject(ref, subject, subtaskId: subtaskId),
+  );
   if (!context.mounted) return;
   await pushTimerPage(Navigator.of(context));
 }
@@ -99,7 +131,8 @@ Future<void> startPomodoroFromWidget(
   BuildContext context,
   WidgetRef ref,
 ) async {
-  await _beginFocus(ref);
+  if (!context.mounted) return;
+  await _withLoading(context, () => _beginFocus(ref));
   if (!context.mounted) return;
   final navigator = Navigator.of(context);
   navigator.popUntil((route) => route.isFirst);
@@ -114,14 +147,17 @@ Future<void> startFocusFromReminder(
   WidgetRef ref, {
   Subject? subject,
 }) async {
-  final running = ref.read(pomodoroTimerProvider).isRunning;
-  if (!running) {
-    if (subject != null) {
-      await prepareFocusForSubject(ref, subject);
-    } else {
-      await _beginFocus(ref);
+  if (!context.mounted) return;
+  await _withLoading(context, () async {
+    final running = ref.read(pomodoroTimerProvider).isRunning;
+    if (!running) {
+      if (subject != null) {
+        await prepareFocusForSubject(ref, subject);
+      } else {
+        await _beginFocus(ref);
+      }
     }
-  }
+  });
   if (!context.mounted) return;
   final navigator = Navigator.of(context);
   navigator.popUntil((route) => route.isFirst);

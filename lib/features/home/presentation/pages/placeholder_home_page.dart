@@ -12,13 +12,15 @@ class PlaceholderHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final isTablet = context.isTablet;
     return Scaffold(
-      backgroundColor: context.colors.surface,
+      backgroundColor: Colors.transparent,
       body: Center(
         child: Padding(
           padding: EdgeInsets.all(isTablet ? AppSpacing.xl : AppSpacing.lg),
           child: Text(
             context.l10n.appName,
-            style: AppTypography.heading.copyWith(color: context.colors.onPrimaryContainer),
+            style: AppTypography.heading.copyWith(
+              color: context.colors.onPrimaryContainer,
+            ),
           ),
         ),
       ),
