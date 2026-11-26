@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../extensions/context_extensions.dart';
+
+import '../theme/app_colors.dart';
 
 class AppScaffold extends StatelessWidget {
   final Widget body;
@@ -9,6 +10,10 @@ class AppScaffold extends StatelessWidget {
   final Widget? drawer;
   final bool applySafeArea;
 
+  /// Main tabs sit above the shell's background image; pushed routes keep the
+  /// opaque canvas so they do not inherit it.
+  final bool transparentBackground;
+
   const AppScaffold({
     super.key,
     required this.body,
@@ -17,12 +22,15 @@ class AppScaffold extends StatelessWidget {
     this.floatingActionButton,
     this.drawer,
     this.applySafeArea = true,
+    this.transparentBackground = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colors.surface,
+      backgroundColor: transparentBackground
+          ? Colors.transparent
+          : AppColors.appCanvas,
       appBar: appBar,
       bottomNavigationBar: bottomNavigationBar,
       floatingActionButton: floatingActionButton,

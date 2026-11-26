@@ -13,6 +13,7 @@ import '../../domain/repositories/planner_preferences_repository.dart';
 import '../../domain/repositories/subject_repository.dart';
 import '../../domain/repositories/task_repository.dart';
 import 'pomodoro_timer_controller.dart';
+import 'subtasks_provider.dart';
 
 final subjectRepositoryProvider = Provider<SubjectRepository>((ref) {
   return SubjectRepositoryImpl(ref.watch(appDatabaseProvider));
@@ -52,7 +53,11 @@ class ActiveTaskIdNotifier extends Notifier<int?> {
   @override
   int? build() => null;
 
-  void select(int? id) => state = id;
+  /// Picking another task also drops the subtask of the previous one.
+  void select(int? id) {
+    state = id;
+    ref.read(activeSubtaskIdProvider.notifier).select(null);
+  }
 }
 
 final activeTaskProvider = Provider<Task?>((ref) {

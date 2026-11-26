@@ -38,10 +38,22 @@
   "@timerPause": {},
   "timerReset": "Reset",
   "@timerReset": {},
+  "timerStop": "End",
+  "@timerStop": {},
+  "timerStartBreak": "Start break",
+  "@timerStartBreak": {},
+  "timerSkipBreak": "Skip break",
+  "@timerSkipBreak": {},
+  "timerSettings": "Timer settings",
+  "@timerSettings": {},
+  "timerLongBreakEvery": "Long break after (rounds)",
+  "@timerLongBreakEvery": {},
   "timerRound": "Round {round}",
   "@timerRound": {
     "placeholders": {
-      "round": { "type": "int" }
+      "round": {
+        "type": "int"
+      }
     }
   },
   "backgroundNotificationTitle": "Focus session running",
@@ -54,9 +66,9 @@
   "@backgroundPermissions": {},
   "backgroundPermissionsIntro": "Keep your timer running and visible after you leave the app.",
   "@backgroundPermissionsIntro": {},
-  "overlayPermissionTitle": "Floating timer",
+  "overlayPermissionTitle": "Floating timer (optional)",
   "@overlayPermissionTitle": {},
-  "overlayPermissionBody": "Allow Mero Focus to draw over other apps so a small timer stays visible when you switch apps.",
+  "overlayPermissionBody": "Shows a small timer over other apps when you leave Mero Focus. Off by default: the notification already shows the live time. Turning it on asks for the \"draw over other apps\" permission.",
   "@overlayPermissionBody": {},
   "overlayPermissionAction": "Grant overlay permission",
   "@overlayPermissionAction": {},
@@ -84,6 +96,10 @@
   "@tasksCompletedCount": {},
   "tasksRemainingCount": "Remaining tasks",
   "@tasksRemainingCount": {},
+  "tasksRemainingTime": "Time remaining",
+  "@tasksRemainingTime": {},
+  "tasksToDoCount": "Tasks to do",
+  "@tasksToDoCount": {},
   "tasksElapsedTime": "Time spent",
   "@tasksElapsedTime": {},
   "tasksEstimatedTime": "Estimated time",
@@ -96,7 +112,7 @@
   "@tasksAddHint": {},
   "tasksSort": "Sort tasks",
   "@tasksSort": {},
-  "tasksSortProject": "By subject",
+  "tasksSortProject": "By fixed task",
   "@tasksSortProject": {},
   "tasksSortDueDate": "By due date",
   "@tasksSortDueDate": {},
@@ -106,13 +122,15 @@
   "@tasksSelected": {},
   "tasksEmpty": "No tasks in this range",
   "@tasksEmpty": {},
-  "subjects": "Subjects",
+  "subjects": "Fixed tasks",
   "@subjects": {},
-  "subjectsNew": "New subject",
+  "subjectsNew": "New fixed task",
   "@subjectsNew": {},
-  "subjectsNameHint": "Subject name",
+  "subjectsEdit": "Edit fixed task",
+  "@subjectsEdit": {},
+  "subjectsNameHint": "Fixed task name (e.g. Maintenance)",
   "@subjectsNameHint": {},
-  "subjectsEmpty": "Add your subjects to pick them later",
+  "subjectsEmpty": "Add the fixed tasks you work on all year",
   "@subjectsEmpty": {},
   "actionCancel": "Cancel",
   "@actionCancel": {},
@@ -128,12 +146,14 @@
   "@actionClear": {},
   "taskTitleLabel": "Task",
   "@taskTitleLabel": {},
-  "taskEstimatedPomodoros": "Estimated pomodoros",
+  "taskEstimatedPomodoros": "Estimated sessions (optional)",
   "@taskEstimatedPomodoros": {},
   "taskPomodorosCount": "{count} pomodoros",
   "@taskPomodorosCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "taskPriorityLow": "Low",
@@ -177,8 +197,12 @@
   "reportDailyGoal": "Daily goal: {current} of {goal}",
   "@reportDailyGoal": {
     "placeholders": {
-      "current": { "type": "String" },
-      "goal": { "type": "String" }
+      "current": {
+        "type": "String"
+      },
+      "goal": {
+        "type": "String"
+      }
     }
   },
   "reportRangeFocus": "Focus time",
@@ -202,22 +226,359 @@
   "reportSummary": "Total focus: {total}\nCompleted sessions: {completed}\nFocus days: {days}",
   "@reportSummary": {
     "placeholders": {
-      "total": { "type": "String" },
-      "completed": { "type": "String" },
-      "days": { "type": "String" }
+      "total": {
+        "type": "String"
+      },
+      "completed": {
+        "type": "String"
+      },
+      "days": {
+        "type": "String"
+      }
     }
   },
   "durationMinutes": "{minutes} min",
   "@durationMinutes": {
     "placeholders": {
-      "minutes": { "type": "int" }
+      "minutes": {
+        "type": "int"
+      }
     }
   },
   "durationHoursMinutes": "{hours} h {minutes} min",
   "@durationHoursMinutes": {
     "placeholders": {
-      "hours": { "type": "int" },
-      "minutes": { "type": "int" }
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
     }
-  }
+  },
+  "taskEstimateNotSet": "Not set",
+  "@taskEstimateNotSet": {},
+  "taskEstimatedSessions": "Estimated sessions: {count}",
+  "@taskEstimatedSessions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "taskSpentSummary": "Time spent: {time} • Sessions: {count}",
+  "@taskSpentSummary": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "subjectSessionsDone": "{count} sessions done",
+  "@subjectSessionsDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "timerFullscreen": "Full screen",
+  "@timerFullscreen": {},
+  "timerExitFullscreen": "Exit full screen",
+  "@timerExitFullscreen": {},
+  "settingsSoundSection": "Sounds",
+  "@settingsSoundSection": {},
+  "soundNone": "No sound",
+  "@soundNone": {},
+  "soundWhite": "White noise",
+  "@soundWhite": {},
+  "soundPink": "Pink noise",
+  "@soundPink": {},
+  "soundBrown": "Brown noise",
+  "@soundBrown": {},
+  "soundRain": "Rain",
+  "@soundRain": {},
+  "soundSea": "Sea",
+  "@soundSea": {},
+  "soundForest": "Forest",
+  "@soundForest": {},
+  "soundBirds": "Birds",
+  "@soundBirds": {},
+  "soundCafe": "Cafe",
+  "@soundCafe": {},
+  "soundEndTimer": "Sound at the end of the timer",
+  "@soundEndTimer": {},
+  "settingsBackgroundSection": "Background image",
+  "@settingsBackgroundSection": {},
+  "backgroundPick": "Choose from gallery",
+  "@backgroundPick": {},
+  "backgroundRemove": "Remove image",
+  "@backgroundRemove": {},
+  "backgroundTimerOnly": "Timer only",
+  "@backgroundTimerOnly": {},
+  "backgroundTimerAndTasks": "Timer and tasks",
+  "@backgroundTimerAndTasks": {},
+  "reportDailyGoalEdit": "Daily goal",
+  "@reportDailyGoalEdit": {},
+  "reportStreak": "Day streak",
+  "@reportStreak": {},
+  "examDaysLeft": "{count} days left",
+  "@examDaysLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "examToday": "The exam is today",
+  "@examToday": {},
+  "examPassed": "The exam date has passed",
+  "@examPassed": {},
+  "examEdit": "Edit exam goal",
+  "@examEdit": {},
+  "examRemove": "Remove",
+  "@examRemove": {},
+  "examPlanTitle": "Quick study plan",
+  "@examPlanTitle": {},
+  "examPlanIntro": "If you study this much every day until the exam:",
+  "@examPlanIntro": {},
+  "examPlanPerDay": "{hours} hours a day",
+  "@examPlanPerDay": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "examPlanTotal": "You will have studied {total} hours by the exam",
+  "@examPlanTotal": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "examPlanNoDays": "Pick a future exam date to see a plan.",
+  "@examPlanNoDays": {},
+  "examPlanMotivation": "Study, focus and stay consistent — every session brings you closer to your goal.",
+  "@examPlanMotivation": {},
+  "goalsAdd": "Add a goal",
+  "@goalsAdd": {},
+  "goalNameLabel": "Goal name",
+  "@goalNameLabel": {},
+  "goalNameHint": "e.g. Physics exam, learn English",
+  "@goalNameHint": {},
+  "goalDateLabel": "End date (optional)",
+  "@goalDateLabel": {},
+  "goalNoDate": "No end date",
+  "@goalNoDate": {},
+  "reportExportPdf": "Export / share PDF",
+  "@reportExportPdf": {},
+  "reportExportFailed": "Could not create the PDF",
+  "@reportExportFailed": {},
+  "reportPdfTitle": "Focus report",
+  "@reportPdfTitle": {},
+  "reportPdfGenerated": "Created on {date}",
+  "@reportPdfGenerated": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "reportPeak": "Peak: {value}",
+  "@reportPeak": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "reportBySubject": "Time by fixed task",
+  "@reportBySubject": {},
+  "confirmDeleteTitle": "Delete?",
+  "@confirmDeleteTitle": {},
+  "confirmDeleteBody": "Delete \"{name}\"? This cannot be undone.",
+  "@confirmDeleteBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "actionEdit": "Edit",
+  "@actionEdit": {},
+  "actionMarkDone": "Mark as done",
+  "@actionMarkDone": {},
+  "actionMore": "More options",
+  "@actionMore": {},
+  "subtasksManage": "Subtasks",
+  "@subtasksManage": {},
+  "subtaskRename": "Rename",
+  "@subtaskRename": {},
+  "subtaskNameHint": "Subtask name",
+  "@subtaskNameHint": {},
+  "subtaskAddHint": "Add a subtask (optional)...",
+  "@subtaskAddHint": {},
+  "subtaskGeneral": "General (no subtask)",
+  "@subtaskGeneral": {},
+  "subtaskTotalAllTime": "Total time, all time",
+  "@subtaskTotalAllTime": {},
+  "reminders": "Reminders",
+  "@reminders": {},
+  "remindersEmpty": "No reminders yet. Add one so you never skip studying.",
+  "@remindersEmpty": {},
+  "reminderAdd": "Add reminder",
+  "@reminderAdd": {},
+  "reminderEdit": "Edit reminder",
+  "@reminderEdit": {},
+  "reminderTitleLabel": "What do you need to do?",
+  "@reminderTitleLabel": {},
+  "reminderTitleHint": "e.g. Revise chapter 3",
+  "@reminderTitleHint": {},
+  "reminderDefaultTitle": "Time to study",
+  "@reminderDefaultTitle": {},
+  "reminderTime": "Time",
+  "@reminderTime": {},
+  "reminderRepeatDaily": "Every day",
+  "@reminderRepeatDaily": {},
+  "reminderRepeatDays": "Some days",
+  "@reminderRepeatDays": {},
+  "reminderRepeatOnce": "Once",
+  "@reminderRepeatOnce": {},
+  "reminderEveryDay": "Every day",
+  "@reminderEveryDay": {},
+  "reminderOnceOn": "Once on {date}",
+  "@reminderOnceOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderDate": "Date",
+  "@reminderDate": {},
+  "reminderLinkedTask": "Linked fixed task (optional)",
+  "@reminderLinkedTask": {},
+  "reminderNoLink": "None (start a general session)",
+  "@reminderNoLink": {},
+  "reminderBody": "Tap to start your Pomodoro",
+  "@reminderBody": {},
+  "reminderSuggestedTitle": "Suggestions",
+  "@reminderSuggestedTitle": {},
+  "reminderSuggestMorning": "Morning study session",
+  "@reminderSuggestMorning": {},
+  "reminderSuggestEvening": "Evening review",
+  "@reminderSuggestEvening": {},
+  "reminderSuggestPlan": "Plan tomorrow's tasks",
+  "@reminderSuggestPlan": {},
+  "reminderSmartSwitch": "Smart reminder",
+  "@reminderSmartSwitch": {},
+  "reminderSmartSubtitle": "Reminds you only on days you haven't studied yet",
+  "@reminderSmartSubtitle": {},
+  "reminderSmartTitle": "Keep your streak going",
+  "@reminderSmartTitle": {},
+  "reminderSmartBody": "You haven't studied today — start a session now.",
+  "@reminderSmartBody": {},
+  "reminderNotificationsOff": "Notifications are off, so reminders cannot reach you.",
+  "@reminderNotificationsOff": {},
+  "reminderAllow": "Allow",
+  "@reminderAllow": {},
+  "reminderChannelName": "Study reminders",
+  "@reminderChannelName": {},
+  "reminderChannelDescription": "Reminders to start studying",
+  "@reminderChannelDescription": {},
+  "weekday1": "Mon",
+  "@weekday1": {},
+  "weekday2": "Tue",
+  "@weekday2": {},
+  "weekday3": "Wed",
+  "@weekday3": {},
+  "weekday4": "Thu",
+  "@weekday4": {},
+  "weekday5": "Fri",
+  "@weekday5": {},
+  "weekday6": "Sat",
+  "@weekday6": {},
+  "weekday7": "Sun",
+  "@weekday7": {},
+  "actionRetry": "Try again",
+  "@actionRetry": {},
+  "statusLoading": "Loading…",
+  "@statusLoading": {},
+  "statusSaving": "Saving…",
+  "@statusSaving": {},
+  "statusOffline": "No connection. Your work stays saved on this device.",
+  "@statusOffline": {},
+  "errorGeneric": "Something went wrong. Please try again.",
+  "@errorGeneric": {},
+  "errorLoadFailed": "We couldn't load this screen.",
+  "@errorLoadFailed": {},
+  "comingSoonTitle": "Coming soon",
+  "@comingSoonTitle": {},
+  "comingSoonBody": "This section is still being built. Your timer and task data are ready to use now.",
+  "@comingSoonBody": {},
+  "focusPrimaryHint": "Start when you're ready. The timer keeps running in the background.",
+  "@focusPrimaryHint": {},
+  "accentSection": "Primary colour",
+  "@accentSection": {},
+  "accentHint": "Used for buttons, progress and selected items.",
+  "@accentHint": {},
+  "accentRoyal": "Royal blue",
+  "@accentRoyal": {},
+  "accentViolet": "Violet",
+  "@accentViolet": {},
+  "accentCrimson": "Crimson",
+  "@accentCrimson": {},
+  "accentAmber": "Amber",
+  "@accentAmber": {},
+  "accentEmerald": "Emerald",
+  "@accentEmerald": {},
+  "accentMagenta": "Magenta",
+  "@accentMagenta": {},
+  "accentIndigo": "Indigo",
+  "@accentIndigo": {},
+  "accentOlive": "Olive",
+  "@accentOlive": {},
+  "accentTeal": "Teal",
+  "@accentTeal": {},
+  "accentCyan": "Cyan",
+  "@accentCyan": {},
+  "accentOrange": "Orange",
+  "@accentOrange": {},
+  "accentRose": "Rose",
+  "@accentRose": {},
+  "accentGrass": "Grass",
+  "@accentGrass": {},
+  "accentPlum": "Plum",
+  "@accentPlum": {},
+  "accentSlate": "Slate",
+  "@accentSlate": {},
+  "accentCopper": "Copper",
+  "@accentCopper": {},
+  "settingsBackgroundReady": "Ready backgrounds",
+  "@settingsBackgroundReady": {},
+  "backgroundDawn": "Dawn mist",
+  "@backgroundDawn": {},
+  "backgroundOcean": "Ocean calm",
+  "@backgroundOcean": {},
+  "backgroundForest": "Forest shade",
+  "@backgroundForest": {},
+  "backgroundRose": "Rose quartz",
+  "@backgroundRose": {},
+  "backgroundSlate": "Slate sky",
+  "@backgroundSlate": {},
+  "backgroundSand": "Sand dune",
+  "@backgroundSand": {},
+  "backgroundAurora": "Aurora",
+  "@backgroundAurora": {},
+  "backgroundNebula": "Nebula",
+  "@backgroundNebula": {},
+  "backgroundReset": "Reset to default",
+  "@backgroundReset": {},
+  "backgroundCustom": "From gallery",
+  "@backgroundCustom": {}
 }

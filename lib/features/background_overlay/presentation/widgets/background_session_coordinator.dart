@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/l10n/l10n_context.dart';
+import '../../../home_widgets/presentation/widgets/home_widget_bridge.dart';
 import '../../../pomodoro/domain/entities/session_type.dart';
 import '../../../pomodoro/presentation/controllers/pomodoro_timer_controller.dart';
 import '../../domain/entities/overlay_timer_data.dart';
@@ -55,13 +56,14 @@ class _BackgroundSessionCoordinatorState
   Widget build(BuildContext context) {
     ref.watch(pomodoroTimerProvider);
     ref.listen(pomodoroTimerProvider, (_, _) => _sync());
+    ref.listen(overlayEnabledProvider, (_, _) => _sync());
 
     if (!_firstSyncScheduled) {
       _firstSyncScheduled = true;
       WidgetsBinding.instance.addPostFrameCallback((_) => _sync());
     }
 
-    return widget.child;
+    return HomeWidgetBridge(child: widget.child);
   }
 
   void _sync() {
@@ -74,17 +76,21 @@ class _BackgroundSessionCoordinatorState
       SessionType.longBreak => l10n.pomodoroLongBreak,
     };
 
+    final overlayData = OverlayTimerData(
+      remainingSeconds: snapshot.remaining.inSeconds,
+      phaseLabel: phaseLabel,
+      timeLabel: l10n.overlayTimeLabel,
+    );
+
+    final roundLabel = l10n.timerRound(snapshot.completedRounds + 1);
     unawaited(
       ref.read(backgroundSessionProvider.notifier).sync(
             timerRunning: snapshot.isRunning,
             appInBackground: _appInBackground,
-            notificationTitle: l10n.backgroundNotificationTitle,
-            notificationText: l10n.backgroundNotificationText,
-            overlayData: OverlayTimerData(
-              remainingSeconds: snapshot.remaining.inSeconds,
-              phaseLabel: phaseLabel,
-              timeLabel: l10n.overlayTimeLabel,
-            ),
+            // Clear, glanceable notification: phase + live time, round as context.
+            notificationTitle: '$phaseLabel  •  ${overlayData.formattedTime}',
+            notificationText: roundLabel,
+            overlayData: overlayData,
           ),
     );
   }

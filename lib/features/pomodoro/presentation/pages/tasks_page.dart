@@ -15,17 +15,20 @@ import '../../domain/entities/subject.dart';
 import '../../domain/entities/task.dart';
 import '../../domain/entities/task_sort.dart';
 import '../../domain/stats/pomodoro_stats.dart';
+import '../controllers/focus_totals.dart';
 import '../controllers/planner_actions.dart';
 import '../controllers/planner_providers.dart';
-import '../formatting/duration_labels.dart';
 import '../sheets/add_task_field.dart';
 import '../sheets/task_edit_sheet.dart';
-import '../widgets/planner_stat_tile.dart';
+import '../widgets/subjects_strip.dart';
 import '../widgets/task_tile.dart';
+import '../widgets/tasks_summary_card.dart';
+import 'focus_launcher.dart';
+import 'reminders_page.dart';
 
 enum _Scope { today, tomorrow, week }
 
-/// Today / Tomorrow / This week planner with a sort menu and drawer shortcuts.
+/// Subjects strip + Today / Tomorrow / This week planner.
 class TasksPage extends ConsumerWidget {
   const TasksPage({super.key});
 
@@ -37,8 +40,10 @@ class TasksPage extends ConsumerWidget {
     return DefaultTabController(
       length: 3,
       child: AppScaffold(
+        transparentBackground: true,
         appBar: AppAppBar(
           title: l10n.tasks,
+          transparentDegree: 0.7,
           bottom: TabBar(
             tabs: [
               Tab(text: l10n.tasksToday),
@@ -74,11 +79,19 @@ class TasksPage extends ConsumerWidget {
           ],
         ),
         drawer: const _TasksDrawer(),
-        body: TabBarView(
+        body: Column(
           children: [
-            _TaskScope(scope: _Scope.today, sort: sort),
-            _TaskScope(scope: _Scope.tomorrow, sort: sort),
-            _TaskScope(scope: _Scope.week, sort: sort),
+            //     const GoalsCard(),
+            const SubjectsStrip(),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  _TaskScope(scope: _Scope.today, sort: sort),
+                  _TaskScope(scope: _Scope.tomorrow, sort: sort),
+                  _TaskScope(scope: _Scope.week, sort: sort),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -102,6 +115,21 @@ class _TasksDrawer extends StatelessWidget {
               onTap: () {
                 Navigator.pop(context);
                 unawaited(AppRouter.toSubjects(context));
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.notifications_active_outlined),
+              title: Text(l10n.reminders),
+              onTap: () {
+                final navigator = Navigator.of(context);
+                navigator.pop();
+                unawaited(
+                  navigator.push<void>(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const RemindersPage(),
+                    ),
+                  ),
+                );
               },
             ),
             ListTile(
@@ -160,20 +188,33 @@ class _TaskScopeState extends ConsumerState<_TaskScope> {
     return '';
   }
 
+  /// Dart's sort is not guaranteed stable, so every comparison falls back to
+  /// due date and creation time to keep the order deterministic.
   List<Task> _sorted(List<Task> source, List<Subject> subjects, TaskSort sort) {
+    int tieBreak(Task a, Task b) {
+      final byDue = a.effectiveDue.compareTo(b.effectiveDue);
+      return byDue != 0 ? byDue : a.createdAt.compareTo(b.createdAt);
+    }
+
     final result = [...source];
     switch (sort) {
       case TaskSort.project:
-        result.sort(
-          (a, b) =>
-              _subjectName(a, subjects).compareTo(_subjectName(b, subjects)),
-        );
+        result.sort((a, b) {
+          final bySubject = _subjectName(
+            a,
+            subjects,
+          ).compareTo(_subjectName(b, subjects));
+          return bySubject != 0 ? bySubject : tieBreak(a, b);
+        });
       case TaskSort.dueDate:
-        result.sort((a, b) => a.effectiveDue.compareTo(b.effectiveDue));
+        result.sort(tieBreak);
       case TaskSort.priority:
-        result.sort(
-          (a, b) => b.priority.storageValue.compareTo(a.priority.storageValue),
-        );
+        result.sort((a, b) {
+          final byPriority = b.priority.storageValue.compareTo(
+            a.priority.storageValue,
+          );
+          return byPriority != 0 ? byPriority : tieBreak(a, b);
+        });
     }
     return result;
   }
@@ -190,15 +231,15 @@ class _TaskScopeState extends ConsumerState<_TaskScope> {
 
     if (tasksAsync is! AsyncData<List<Task>> ||
         subjectsAsync is! AsyncData<List<Subject>> ||
-        sessionsAsync is! AsyncData<List<FocusSession>>) {
+        sessionsAsync is! AsyncData<List<FocusSession>> ||
+        preferencesAsync is! AsyncData<PlannerPreferences>) {
       return const Center(child: CircularProgressIndicator());
     }
 
     final tasks = tasksAsync.value;
     final subjects = subjectsAsync.value;
-    final preferences = preferencesAsync is AsyncData<PlannerPreferences>
-        ? preferencesAsync.value
-        : const PlannerPreferences();
+    final taskTotals = ref.watch(taskTotalsProvider);
+    final preferences = preferencesAsync.value;
     final stats = PomodoroStats(
       sessionsAsync.value,
       dailyGoalMinutes: preferences.dailyGoalMinutes,
@@ -206,9 +247,15 @@ class _TaskScopeState extends ConsumerState<_TaskScope> {
 
     bool inScope(Task task) {
       final due = task.effectiveDue;
-      return widget.scope == _Scope.today
-          ? due.isBefore(window.to)
-          : !due.isBefore(window.from) && due.isBefore(window.to);
+      if (widget.scope == _Scope.today) {
+        // A subject's daily task only belongs to the day it was added; a
+        // stale one must not pile up in later days.
+        if (PlannerActions.isSubjectDailyTask(task, subjects)) {
+          return !due.isBefore(window.from) && due.isBefore(window.to);
+        }
+        return due.isBefore(window.to);
+      }
+      return !due.isBefore(window.from) && due.isBefore(window.to);
     }
 
     final pending = tasks.where((task) => !task.done && inScope(task)).toList();
@@ -234,40 +281,11 @@ class _TaskScopeState extends ConsumerState<_TaskScope> {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(AppSpacing.sm),
-          child: Row(
-            children: [
-              if (widget.scope != _Scope.tomorrow)
-                Expanded(
-                  child: PlannerStatTile(
-                    label: l10n.tasksCompletedCount,
-                    value: '${done.length}',
-                  ),
-                ),
-              if (widget.scope != _Scope.tomorrow)
-                Expanded(
-                  child: PlannerStatTile(
-                    label: l10n.tasksElapsedTime,
-                    value: stats
-                        .totalDuration(window.from, window.to)
-                        .labelOf(context),
-                  ),
-                ),
-              Expanded(
-                child: PlannerStatTile(
-                  label: l10n.tasksRemainingCount,
-                  value: '${pending.length}',
-                ),
-              ),
-              Expanded(
-                child: PlannerStatTile(
-                  label: l10n.tasksEstimatedTime,
-                  value: Duration(seconds: estimatedSeconds).labelOf(context),
-                ),
-              ),
-            ],
-          ),
+        TasksSummaryCard(
+          estimated: Duration(seconds: estimatedSeconds),
+          toDo: pending.length,
+          elapsed: stats.totalDuration(window.from, window.to),
+          completed: done.length,
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
@@ -288,6 +306,9 @@ class _TaskScopeState extends ConsumerState<_TaskScope> {
                     return TaskTile(
                       task: task,
                       subjects: subjects,
+                      total:
+                          (task.id == null ? null : taskTotals[task.id!]) ??
+                          const FocusTotal(),
                       onToggleDone: () => ref
                           .read(plannerActionsProvider)
                           .setTaskDone(task, done: !task.done),
@@ -311,21 +332,18 @@ class _TaskScopeState extends ConsumerState<_TaskScope> {
                         isScrollControlled: true,
                         builder: (_) => TaskEditSheet(task: task),
                       ),
-                      onStartFocus: task.id == null
+                      // Play: select the task, start the timer and jump to
+                      // the Pomodoro screen.
+                      onStartFocus: task.id == null || task.done
                           ? null
-                          : () {
-                              ref
-                                  .read(activeTaskIdProvider.notifier)
-                                  .select(task.id);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(l10n.tasksSelected)),
-                              );
-                            },
+                          : () => unawaited(
+                              startFocusOnTask(context, ref, task.id!),
+                            ),
                     );
                   },
                 ),
         ),
-        if (widget.scope == _Scope.week)
+        if (widget.scope != _Scope.tomorrow)
           TextButton.icon(
             onPressed: () => setState(() => _showDone = !_showDone),
             icon: Icon(_showDone ? Icons.visibility_off : Icons.visibility),

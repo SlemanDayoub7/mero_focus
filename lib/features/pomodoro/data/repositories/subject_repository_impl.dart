@@ -32,6 +32,20 @@ class SubjectRepositoryImpl implements SubjectRepository {
   }
 
   @override
+  Future<void> updateSubject(Subject subject) async {
+    final id = subject.id;
+    if (id == null) return;
+    await (_database.update(_database.tags)
+          ..where((row) => row.id.equals(id)))
+        .write(
+      db.TagsCompanion(
+        name: Value(subject.name),
+        colorHex: Value(subject.colorHex),
+      ),
+    );
+  }
+
+  @override
   Future<void> removeSubject(int id) async {
     await _database.transaction(() async {
       await (_database.update(_database.tasks)

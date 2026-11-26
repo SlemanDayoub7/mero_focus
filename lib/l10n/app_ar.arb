@@ -38,10 +38,22 @@
   "@timerPause": {},
   "timerReset": "إعادة ضبط",
   "@timerReset": {},
+  "timerStop": "إنهاء",
+  "@timerStop": {},
+  "timerStartBreak": "ابدأ الاستراحة",
+  "@timerStartBreak": {},
+  "timerSkipBreak": "تخطّي الاستراحة",
+  "@timerSkipBreak": {},
+  "timerSettings": "إعدادات المؤقت",
+  "@timerSettings": {},
+  "timerLongBreakEvery": "استراحة طويلة بعد (جولات)",
+  "@timerLongBreakEvery": {},
   "timerRound": "الجولة {round}",
   "@timerRound": {
     "placeholders": {
-      "round": { "type": "int" }
+      "round": {
+        "type": "int"
+      }
     }
   },
   "backgroundNotificationTitle": "جلسة التركيز قيد التشغيل",
@@ -54,9 +66,9 @@
   "@backgroundPermissions": {},
   "backgroundPermissionsIntro": "حافظ على تشغيل المؤقت وظهوره بعد مغادرة التطبيق.",
   "@backgroundPermissionsIntro": {},
-  "overlayPermissionTitle": "المؤقت العائم",
+  "overlayPermissionTitle": "المؤقت العائم (اختياري)",
   "@overlayPermissionTitle": {},
-  "overlayPermissionBody": "اسمح لميرو فوكس بالرسم فوق التطبيقات الأخرى حتى يبقى مؤقت صغير مرئيًا عند التبديل بين التطبيقات.",
+  "overlayPermissionBody": "يعرض مؤقتاً صغيراً فوق التطبيقات الأخرى عند خروجك من ميرو فوكس. مغلق افتراضياً لأن الإشعار يعرض الوقت الحي أصلاً. تفعيله يطلب إذن \"العرض فوق التطبيقات الأخرى\".",
   "@overlayPermissionBody": {},
   "overlayPermissionAction": "منح إذن النافذة العائمة",
   "@overlayPermissionAction": {},
@@ -84,6 +96,10 @@
   "@tasksCompletedCount": {},
   "tasksRemainingCount": "المهام المتبقية",
   "@tasksRemainingCount": {},
+  "tasksRemainingTime": "الوقت المتبقي",
+  "@tasksRemainingTime": {},
+  "tasksToDoCount": "المهام التي يجب القيام بها",
+  "@tasksToDoCount": {},
   "tasksElapsedTime": "الوقت المنقضي",
   "@tasksElapsedTime": {},
   "tasksEstimatedTime": "الوقت المقدّر",
@@ -96,7 +112,7 @@
   "@tasksAddHint": {},
   "tasksSort": "ترتيب المهام",
   "@tasksSort": {},
-  "tasksSortProject": "حسب المادة",
+  "tasksSortProject": "حسب المهمة الثابتة",
   "@tasksSortProject": {},
   "tasksSortDueDate": "حسب تاريخ الاستحقاق",
   "@tasksSortDueDate": {},
@@ -106,13 +122,15 @@
   "@tasksSelected": {},
   "tasksEmpty": "لا توجد مهام في هذا النطاق",
   "@tasksEmpty": {},
-  "subjects": "المواد الدراسية",
+  "subjects": "المهام الثابتة",
   "@subjects": {},
-  "subjectsNew": "مادة جديدة",
+  "subjectsNew": "مهمة ثابتة جديدة",
   "@subjectsNew": {},
-  "subjectsNameHint": "اسم المادة",
+  "subjectsEdit": "تعديل المهمة الثابتة",
+  "@subjectsEdit": {},
+  "subjectsNameHint": "اسم المهمة الثابتة (مثلاً: الصيانة)",
   "@subjectsNameHint": {},
-  "subjectsEmpty": "أضف موادك ليسهل اختيارها لاحقاً",
+  "subjectsEmpty": "أضف المهام الثابتة التي تعمل عليها طوال السنة",
   "@subjectsEmpty": {},
   "actionCancel": "إلغاء",
   "@actionCancel": {},
@@ -128,12 +146,14 @@
   "@actionClear": {},
   "taskTitleLabel": "المهمة",
   "@taskTitleLabel": {},
-  "taskEstimatedPomodoros": "عدد البومودورو المقدّر",
+  "taskEstimatedPomodoros": "الجلسات المقدّرة (اختياري)",
   "@taskEstimatedPomodoros": {},
   "taskPomodorosCount": "{count} بومودورو",
   "@taskPomodorosCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "taskPriorityLow": "منخفضة",
@@ -177,8 +197,12 @@
   "reportDailyGoal": "هدف اليوم: {current} من {goal}",
   "@reportDailyGoal": {
     "placeholders": {
-      "current": { "type": "String" },
-      "goal": { "type": "String" }
+      "current": {
+        "type": "String"
+      },
+      "goal": {
+        "type": "String"
+      }
     }
   },
   "reportRangeFocus": "وقت التركيز",
@@ -202,22 +226,359 @@
   "reportSummary": "إجمالي التركيز: {total}\nالتركيزات المكتملة: {completed}\nأيام التركيز: {days}",
   "@reportSummary": {
     "placeholders": {
-      "total": { "type": "String" },
-      "completed": { "type": "String" },
-      "days": { "type": "String" }
+      "total": {
+        "type": "String"
+      },
+      "completed": {
+        "type": "String"
+      },
+      "days": {
+        "type": "String"
+      }
     }
   },
   "durationMinutes": "{minutes} دقيقة",
   "@durationMinutes": {
     "placeholders": {
-      "minutes": { "type": "int" }
+      "minutes": {
+        "type": "int"
+      }
     }
   },
   "durationHoursMinutes": "{hours} ساعة {minutes} دقيقة",
   "@durationHoursMinutes": {
     "placeholders": {
-      "hours": { "type": "int" },
-      "minutes": { "type": "int" }
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
     }
-  }
+  },
+  "taskEstimateNotSet": "غير محدد",
+  "@taskEstimateNotSet": {},
+  "taskEstimatedSessions": "الجلسات المقدّرة: {count}",
+  "@taskEstimatedSessions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "taskSpentSummary": "الوقت المستغرق: {time} • الجلسات: {count}",
+  "@taskSpentSummary": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "subjectSessionsDone": "{count} جلسة منجزة",
+  "@subjectSessionsDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "timerFullscreen": "ملء الشاشة",
+  "@timerFullscreen": {},
+  "timerExitFullscreen": "إنهاء ملء الشاشة",
+  "@timerExitFullscreen": {},
+  "settingsSoundSection": "الأصوات",
+  "@settingsSoundSection": {},
+  "soundNone": "بدون صوت",
+  "@soundNone": {},
+  "soundWhite": "ضوضاء بيضاء",
+  "@soundWhite": {},
+  "soundPink": "ضوضاء وردية",
+  "@soundPink": {},
+  "soundBrown": "ضوضاء بنية",
+  "@soundBrown": {},
+  "soundRain": "مطر",
+  "@soundRain": {},
+  "soundSea": "بحر",
+  "@soundSea": {},
+  "soundForest": "غابة",
+  "@soundForest": {},
+  "soundBirds": "طيور",
+  "@soundBirds": {},
+  "soundCafe": "مقهى",
+  "@soundCafe": {},
+  "soundEndTimer": "صوت عند نهاية المؤقت",
+  "@soundEndTimer": {},
+  "settingsBackgroundSection": "صورة الخلفية",
+  "@settingsBackgroundSection": {},
+  "backgroundPick": "اختيار من المعرض",
+  "@backgroundPick": {},
+  "backgroundRemove": "حذف الصورة",
+  "@backgroundRemove": {},
+  "backgroundTimerOnly": "المؤقت فقط",
+  "@backgroundTimerOnly": {},
+  "backgroundTimerAndTasks": "المؤقت والمهام",
+  "@backgroundTimerAndTasks": {},
+  "reportDailyGoalEdit": "الهدف اليومي",
+  "@reportDailyGoalEdit": {},
+  "reportStreak": "أيام متتالية",
+  "@reportStreak": {},
+  "examDaysLeft": "تبقّى {count} يوم",
+  "@examDaysLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "examToday": "الامتحان اليوم",
+  "@examToday": {},
+  "examPassed": "انتهى موعد الامتحان",
+  "@examPassed": {},
+  "examEdit": "تعديل هدف الامتحان",
+  "@examEdit": {},
+  "examRemove": "حذف",
+  "@examRemove": {},
+  "examPlanTitle": "خطة دراسة سريعة",
+  "@examPlanTitle": {},
+  "examPlanIntro": "إذا درست هذا القدر كل يوم حتى الامتحان:",
+  "@examPlanIntro": {},
+  "examPlanPerDay": "{hours} ساعات يومياً",
+  "@examPlanPerDay": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "examPlanTotal": "ستكون قد درست {total} ساعة حتى الامتحان",
+  "@examPlanTotal": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "examPlanNoDays": "اختر تاريخ امتحان قادم لعرض الخطة.",
+  "@examPlanNoDays": {},
+  "examPlanMotivation": "ادرس وركّز واستمر — كل جلسة تقرّبك من هدفك.",
+  "@examPlanMotivation": {},
+  "goalsAdd": "أضف هدفاً",
+  "@goalsAdd": {},
+  "goalNameLabel": "اسم الهدف",
+  "@goalNameLabel": {},
+  "goalNameHint": "مثلاً: امتحان الفيزياء، تعلّم الإنجليزي",
+  "@goalNameHint": {},
+  "goalDateLabel": "تاريخ الانتهاء (اختياري)",
+  "@goalDateLabel": {},
+  "goalNoDate": "بدون تاريخ انتهاء",
+  "@goalNoDate": {},
+  "reportExportPdf": "تصدير ومشاركة PDF",
+  "@reportExportPdf": {},
+  "reportExportFailed": "تعذّر إنشاء ملف PDF",
+  "@reportExportFailed": {},
+  "reportPdfTitle": "تقرير التركيز",
+  "@reportPdfTitle": {},
+  "reportPdfGenerated": "أُنشئ بتاريخ {date}",
+  "@reportPdfGenerated": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "reportPeak": "الأعلى: {value}",
+  "@reportPeak": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "reportBySubject": "الوقت حسب المهمة الثابتة",
+  "@reportBySubject": {},
+  "confirmDeleteTitle": "حذف؟",
+  "@confirmDeleteTitle": {},
+  "confirmDeleteBody": "هل تريد حذف «{name}»؟ لا يمكن التراجع عن ذلك.",
+  "@confirmDeleteBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "actionEdit": "تعديل",
+  "@actionEdit": {},
+  "actionMarkDone": "تحديد كمنجزة",
+  "@actionMarkDone": {},
+  "actionMore": "المزيد من الخيارات",
+  "@actionMore": {},
+  "subtasksManage": "المهام الفرعية",
+  "@subtasksManage": {},
+  "subtaskRename": "إعادة تسمية",
+  "@subtaskRename": {},
+  "subtaskNameHint": "اسم المهمة الفرعية",
+  "@subtaskNameHint": {},
+  "subtaskAddHint": "أضف مهمة فرعية (اختياري)...",
+  "@subtaskAddHint": {},
+  "subtaskGeneral": "عام (بدون مهمة فرعية)",
+  "@subtaskGeneral": {},
+  "subtaskTotalAllTime": "الإجمالي على مدى الوقت",
+  "@subtaskTotalAllTime": {},
+  "reminders": "التذكيرات",
+  "@reminders": {},
+  "remindersEmpty": "لا توجد تذكيرات بعد. أضف تذكيراً حتى لا تفوّت دراستك.",
+  "@remindersEmpty": {},
+  "reminderAdd": "إضافة تذكير",
+  "@reminderAdd": {},
+  "reminderEdit": "تعديل التذكير",
+  "@reminderEdit": {},
+  "reminderTitleLabel": "ما الذي عليك فعله؟",
+  "@reminderTitleLabel": {},
+  "reminderTitleHint": "مثلاً: مراجعة الفصل الثالث",
+  "@reminderTitleHint": {},
+  "reminderDefaultTitle": "حان وقت الدراسة",
+  "@reminderDefaultTitle": {},
+  "reminderTime": "الوقت",
+  "@reminderTime": {},
+  "reminderRepeatDaily": "كل يوم",
+  "@reminderRepeatDaily": {},
+  "reminderRepeatDays": "أيام محددة",
+  "@reminderRepeatDays": {},
+  "reminderRepeatOnce": "مرة واحدة",
+  "@reminderRepeatOnce": {},
+  "reminderEveryDay": "كل يوم",
+  "@reminderEveryDay": {},
+  "reminderOnceOn": "مرة واحدة بتاريخ {date}",
+  "@reminderOnceOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderDate": "التاريخ",
+  "@reminderDate": {},
+  "reminderLinkedTask": "مهمة ثابتة مرتبطة (اختياري)",
+  "@reminderLinkedTask": {},
+  "reminderNoLink": "بدون (ابدأ جلسة عامة)",
+  "@reminderNoLink": {},
+  "reminderBody": "اضغط لبدء البومودورو",
+  "@reminderBody": {},
+  "reminderSuggestedTitle": "اقتراحات",
+  "@reminderSuggestedTitle": {},
+  "reminderSuggestMorning": "جلسة دراسة صباحية",
+  "@reminderSuggestMorning": {},
+  "reminderSuggestEvening": "مراجعة مسائية",
+  "@reminderSuggestEvening": {},
+  "reminderSuggestPlan": "خطط لمهام الغد",
+  "@reminderSuggestPlan": {},
+  "reminderSmartSwitch": "التذكير الذكي",
+  "@reminderSmartSwitch": {},
+  "reminderSmartSubtitle": "يذكّرك فقط في الأيام التي لم تدرس فيها بعد",
+  "@reminderSmartSubtitle": {},
+  "reminderSmartTitle": "حافظ على استمراريتك",
+  "@reminderSmartTitle": {},
+  "reminderSmartBody": "لم تدرس اليوم بعد — ابدأ جلسة الآن.",
+  "@reminderSmartBody": {},
+  "reminderNotificationsOff": "الإشعارات متوقفة، لذلك لن تصلك التذكيرات.",
+  "@reminderNotificationsOff": {},
+  "reminderAllow": "السماح",
+  "@reminderAllow": {},
+  "reminderChannelName": "تذكيرات الدراسة",
+  "@reminderChannelName": {},
+  "reminderChannelDescription": "تذكيرات لبدء الدراسة",
+  "@reminderChannelDescription": {},
+  "weekday1": "الاثنين",
+  "@weekday1": {},
+  "weekday2": "الثلاثاء",
+  "@weekday2": {},
+  "weekday3": "الأربعاء",
+  "@weekday3": {},
+  "weekday4": "الخميس",
+  "@weekday4": {},
+  "weekday5": "الجمعة",
+  "@weekday5": {},
+  "weekday6": "السبت",
+  "@weekday6": {},
+  "weekday7": "الأحد",
+  "@weekday7": {},
+  "actionRetry": "حاول مرة أخرى",
+  "@actionRetry": {},
+  "statusLoading": "جارٍ التحميل…",
+  "@statusLoading": {},
+  "statusSaving": "جارٍ الحفظ…",
+  "@statusSaving": {},
+  "statusOffline": "لا يوجد اتصال. عملك محفوظ على هذا الجهاز.",
+  "@statusOffline": {},
+  "errorGeneric": "حدث خطأ. حاول مرة أخرى.",
+  "@errorGeneric": {},
+  "errorLoadFailed": "تعذّر تحميل هذه الشاشة.",
+  "@errorLoadFailed": {},
+  "comingSoonTitle": "قريبًا",
+  "@comingSoonTitle": {},
+  "comingSoonBody": "هذا القسم قيد الإنشاء. المؤقت والمهام جاهزة للاستخدام الآن.",
+  "@comingSoonBody": {},
+  "focusPrimaryHint": "ابدأ عندما تكون جاهزًا. سيستمر المؤقت في الخلفية.",
+  "@focusPrimaryHint": {},
+  "accentSection": "اللون الأساسي",
+  "@accentSection": {},
+  "accentHint": "يُستخدم للأزرار والتقدّم والعناصر المحددة.",
+  "@accentHint": {},
+  "accentRoyal": "أزرق ملكي",
+  "@accentRoyal": {},
+  "accentViolet": "بنفسجي",
+  "@accentViolet": {},
+  "accentCrimson": "أحمر قاني",
+  "@accentCrimson": {},
+  "accentAmber": "كهرماني",
+  "@accentAmber": {},
+  "accentEmerald": "زمردي",
+  "@accentEmerald": {},
+  "accentMagenta": "أرجواني وردي",
+  "@accentMagenta": {},
+  "accentIndigo": "نيلي",
+  "@accentIndigo": {},
+  "accentOlive": "زيتي",
+  "@accentOlive": {},
+  "accentTeal": "تركوازي",
+  "@accentTeal": {},
+  "accentCyan": "سماوي",
+  "@accentCyan": {},
+  "accentOrange": "برتقالي",
+  "@accentOrange": {},
+  "accentRose": "وردي",
+  "@accentRose": {},
+  "accentGrass": "أخضر عشبي",
+  "@accentGrass": {},
+  "accentPlum": "خوخي",
+  "@accentPlum": {},
+  "accentSlate": "رمادي مائل للأزرق",
+  "@accentSlate": {},
+  "accentCopper": "نحاسي",
+  "@accentCopper": {},
+  "settingsBackgroundReady": "خلفيات جاهزة",
+  "@settingsBackgroundReady": {},
+  "backgroundDawn": "ضباب الفجر",
+  "@backgroundDawn": {},
+  "backgroundOcean": "هدوء المحيط",
+  "@backgroundOcean": {},
+  "backgroundForest": "ظل الغابة",
+  "@backgroundForest": {},
+  "backgroundRose": "الكوارتز الوردي",
+  "@backgroundRose": {},
+  "backgroundSlate": "سماء رمادية",
+  "@backgroundSlate": {},
+  "backgroundSand": "كثبان رملية",
+  "@backgroundSand": {},
+  "backgroundAurora": "الشفق القطبي",
+  "@backgroundAurora": {},
+  "backgroundNebula": "السديم",
+  "@backgroundNebula": {},
+  "backgroundReset": "إعادة إلى الافتراضي",
+  "@backgroundReset": {},
+  "backgroundCustom": "من المعرض",
+  "@backgroundCustom": {}
 }
